@@ -63,12 +63,6 @@ Ext.define('DGPortal.view.Viewport', {
                         ]
                     }, {
                             title: 'EXPOSURE',
-                            xtype: 'grid',
-                            store: 'Sources',
-                            columns: [
-                                { text: 'Source List', dataIndex: 'value' },
-                                { text: 'Source Name', dataIndex: 'name' },]
-
                         }, {
                             title: 'PROTECTION'
                         }, {

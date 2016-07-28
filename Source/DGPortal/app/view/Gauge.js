@@ -270,9 +270,8 @@ Ext.define('DGPortal.view.Gauge', {
                         }, this);
                         totalProtected = protectedFiles + protectedTables;
                         var protectedPercent = (totalProtected / totalFiles_Tables) * 100;
-                        this.dataObj.yVal = protectedPercent;
-                        this.dataObj.subtitle = protectedPercent + '%';
-
+                        this.dataObj.yVal = +protectedPercent.toFixed(1); //parseFloat(protectedPercent.toPrecision(3));
+                        this.dataObj.subtitle = Math.round(protectedPercent) + '%';
                         var fileText = DGPortal.Constants.getFileText(protectedFiles);
                         var tableText = DGPortal.Constants.getTableText(protectedTables);
 
@@ -295,8 +294,8 @@ Ext.define('DGPortal.view.Gauge', {
                         var fileText = DGPortal.Constants.getFileText(unscannedFiles);
                         var tableText = DGPortal.Constants.getTableText(unscannedTables);
 
-                        this.dataObj.yVal = unscannedPercent;
-                        this.dataObj.subtitle = unscannedPercent + '%';
+                        this.dataObj.yVal = +unscannedPercent.toFixed(1);
+                        this.dataObj.subtitle = Math.round(unscannedPercent) + '%';
                         this.dataObj.title = 'UNSCANNED ' + unscannedFiles + ' ' + fileText + '/' +
                             unscannedTables + ' ' + tableText;
                         break;

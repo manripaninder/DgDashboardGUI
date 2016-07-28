@@ -64,28 +64,6 @@ Ext.define('DGPortal.view.LineChart', {
             this.refresh();
         }
     },
-    // private
-    onLoad: function () {
-        this.log(this.store);
-        this.log('OnLoad of ' + this.id + " is called.");
-        if (!this.chart) {
-            this.log("Call refresh from onLoad for initAnim");
-            //this.buildInitData();
-            //this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
-            this.drawChart();
-            if (this.afterGaugeRendered) (this.afterGaugeRendered());
-            return;
-        }
-
-        this.log("Call refresh from onLoad of " + this.id);
-        //this.refreshOnLoad && this.refresh();
-        this.refresh();
-    },
-
-    refresh: function () {
-        //apply logic for updating values from store
-        this.chart.redraw();
-    },
 
     drawChart: function () {
         this.log(this.rendered);
@@ -95,8 +73,9 @@ Ext.define('DGPortal.view.LineChart', {
                     type: 'line',
                     borderWidth: 0.8,
                     borderColor: '#cccccc',
-                    renderTo: this.getId()
-                    // spacingBottom: 0,
+                    renderTo: this.getId(),
+                    spacingBottom: 0,
+                    //marginTop: 2,
                     // spacingLeft: 2,
                     // spacingRight: 10,
                     // height: 176,
@@ -107,18 +86,24 @@ Ext.define('DGPortal.view.LineChart', {
                 },
                 colors: ['#e61d27', '#fdbf2d', '#0071cd', '#44b649', '#f6852a'],
                 xAxis: {
-                    categories: ['Jan', 'Mar', 'May',
-                        'Jul', 'Sep', 'Nov'],
+                    categories: ['JAN', 'MAR', 'MAY',
+                        'JUL', 'SEP', 'NOV'],
                     tickWidth: 0,
-                    lineWidth: 1,
-                    style: {
-                        fontSize: '8px',
-                        fontFamily: 'helvetica'
+                    lineWidth: 0,
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineColor: 'transparent',
+                    labels: {
+                        style: {
+                            fontSize: '8px',
+                            fontFamily: 'montserratregular',
+                            color: '#646464',
+                            //fontWeight: 'bold'
+                        }
                     },
                 },
                 yAxis: {
                     gridLineDashStyle: 'solid',
-
                     offset: 10,
                     title: {
                         enabled: false,
@@ -127,17 +112,16 @@ Ext.define('DGPortal.view.LineChart', {
                         align: 'right',
                         x: 10,
                         y: -2,
-                        tickInterval: 2,
-                        tickAmount: 4
+                        // tickInterval: 2,
+                        // tickAmount: 4
                     }
                 },
-                tooltip: {
-                    valueSuffix: '�C'
-                },
+                // tooltip: {
+                //     valueSuffix: '�C'
+                // },
                 title: {
                     align: "left",
                     text: this.chartTitle,
-
                     style: {
                         color: '#0071ce',
                         fontSize: '13px',
@@ -153,17 +137,17 @@ Ext.define('DGPortal.view.LineChart', {
                     button: 'null'
                 },
                 legend: {
-                    align: 'left',
+                    align: 'center',
                     itemMarginBottom: 0,
                     itemStyle: {
                         fontSize: '8px',
-                        fontWeight: 'normal',
-                        fontFamily: 'helvetica'
-
+                        //fontWeight: 'bold',
+                        fontFamily: 'montserratregular',
+                        color: '#646464'
                     },
                     symbolHeight: 10,
                     symbolWidth: 10,
-                    itemDistance: 18
+                    itemDistance: 8
                 },
                 plotOptions: {
                     series: {
@@ -211,6 +195,29 @@ Ext.define('DGPortal.view.LineChart', {
                     }]
             }
         );
+    },
+
+    // private
+    onLoad: function () {
+        this.log(this.store);
+        this.log('OnLoad of ' + this.id + " is called.");
+        if (!this.chart) {
+            this.log("Call refresh from onLoad for initAnim");
+            //this.buildInitData();
+            //this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
+            this.drawChart();
+            if (this.afterGaugeRendered) (this.afterGaugeRendered());
+            return;
+        }
+
+        this.log("Call refresh from onLoad of " + this.id);
+        //this.refreshOnLoad && this.refresh();
+        this.refresh();
+    },
+
+    refresh: function () {
+        //apply logic for updating values from store
+        this.chart.redraw();
     },
 
     listeners: {
