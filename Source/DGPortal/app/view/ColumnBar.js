@@ -54,21 +54,13 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
 
         this.store = store;
-
-        // if (this.loadMask !== false) {
-        //     if (this.loadMask === true) {
-        //         this.loadMask = new Ext.LoadMask({ target: this, store: this.store });
-        //     } else {
-        //         this.loadMask.bindStore(this.store);
-        //     }
-        // }
-
         if (store && !initial) {
             this.refresh();
         }
     },
 
     drawChart: function () {
+        
         this.log(this.rendered);
         this.chart = new Highcharts.Chart(
             {
@@ -77,7 +69,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     borderWidth: 0.8,
                     borderColor: '#cccccc',
                     spacingBottom: 0,
-                    //spacingLeft: 2,
+                    spacingLeft: 2,
                     //spacingRight: 10,
                     // height: 176,
                     // width: 410,
@@ -85,6 +77,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     renderTo: this.getId(),
                     reflow: true
                     // marginLeft:35
+
                 },
 
                 plotOptions: {
@@ -115,6 +108,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 yAxis: {
                     visible: this.chartYAxisVisible,
                     gridLineWidth: 0,
+                    endOnTick: false,
                     offset: 10,
                     title: {
                         enabled: false,
@@ -137,12 +131,14 @@ Ext.define('DGPortal.view.ColumnBar', {
                 title: {
                     align: "left",
                     text: this.chartTitle,
+
                     style: {
                         color: '#0071ce',
                         fontSize: '13px',
                         fontWeight: 'bold',
                         fontFamily: 'montserratregular',
-                        textTransform: 'uppercase'
+                        textTransform: 'uppercase',
+
                     }
                 },
                 legend: {
@@ -151,9 +147,9 @@ Ext.define('DGPortal.view.ColumnBar', {
                     itemMarginBottom: 0,
                     itemStyle: {
                         fontSize: '8px',
-                        //fontWeight: 'bold',
-                        fontFamily: 'montserratregular',
-                        color: '#646464'
+                        fontWeight: 'normal',
+                        fontFamily: 'montserratregular'
+
                     },
                     symbolHeight: 10,
                     symbolWidth: 10,
@@ -220,6 +216,7 @@ Ext.define('DGPortal.view.ColumnBar', {
     },
 
 
+
     listeners: {
         resize: function () {
             if (this.rendered && this.chart) {
@@ -229,6 +226,7 @@ Ext.define('DGPortal.view.ColumnBar', {
     },
 
     getStoreData: function (records) {
+        XAxisData.prototype.addSeriesData = addSeriesData;
         if (this.store && this.store.first()) {
             var arData = this.store.first().data.sourceList;
             if (arData && Array.isArray(arData)) {
@@ -242,12 +240,19 @@ Ext.define('DGPortal.view.ColumnBar', {
                     case 'exposed':
                         this.populateExposedData(arData);
                         break;
+                    case 'unscanned':
+                        this.populateUnscannedData(arData);
+                        break;
+                    case 'monitored':
+                        this.populateMonitoredData(arData);
+                        break;
                     default:
                         break;
                 }
             }
         }
     },
+
 
     populateCASData: function (arData) {
         var exposed = { name: 'EXPOSED', data: [] };
@@ -275,7 +280,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             // req.read(operation);
 
             this.req.doRequest(operation, function () {
-            
+
             }, this);
 
             console.log(req.reader.jsonData);
@@ -295,9 +300,9 @@ Ext.define('DGPortal.view.ColumnBar', {
 
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = [exposed, masked, monitored, cleaned, unscanned];
-        // console.log(arXAxisCatgs);
-        // console.log(this.dataObj.series);
     },
+
+
 
     //method for populating protected chart data
     populateProtectedData: function (arData) {
@@ -318,9 +323,58 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.dataObj.series = [masked, encrypted, monitored];
     },
 
+
+    //method for populating unscanned chart data
+    populateUnscannedData: function (arData) {      
+
+        this.dataObj.colors = ['#e61b27', '#45b549', '#fdbf2d', '#0071ce'];
+        var arXAxisCatgs = [], seriesData = [];
+        var xAxisCatgsMap = new Ext.util.HashMap();
+        var sdMap = new Ext.util.HashMap();
+
+        sourceList.forEach(function (element, index, array) {
+            //var objValue = JSON.parse(element.value);
+            var objValue = element.value;
+            var source = objValue.source.toUpperCase();
+            var contentType = objValue.contentType.toUpperCase();
+            var serverType = objValue.contentType.toUpperCase();
+            var unscannedVal = objValue.unscanned;
+            if (xAxisCatgsMap.containsKey(source)) {
+                var xAxisData = xAxisCatgsMap.get(source);
+                xAxisData.addSeriesData(contentType, unscannedVal);
+            } else {
+                var xAxisData = new XAxisData(source);
+                xAxisData.addSeriesData(contentType, serverType, unscannedVal);
+                xAxisCatgsMap.add(source, xAxisData);
+            }
+
+            //adding unique policyName to hashMap
+            if (!sdMap.containsKey(contentType)) {
+                sdMap.add(contentType, { name: contentType, data: [] });
+            }
+
+        }, this);
+
+        xAxisCatgsMap.each(function (key, value, length) {
+            arXAxisCatgs.push(key);
+            var seriesData = value.seriesData;
+            sdMap.each(function (key, value, length) {
+                if (seriesData.containsKey(key)) {
+                    var dataVal = seriesData.get(key).data[0];
+                    value.data.push(dataVal);
+                }
+                else {
+                    value.data.push(0);
+                }
+            });
+        });
+        this.dataObj.xAxisCategories = arXAxisCatgs;
+        this.dataObj.series = sdMap.getValues();
+    },
+
+
     //method for populating exposed chart data
-    populateExposedData: function (arData) {
-        exposedXAxisData.prototype.addSeriesData = addSeriesData;
+    populateExposedData: function (arData) {        
 
         this.dataObj.colors = ['#ec297b', '#fdbf2d', '#0071ce', '#f5852b', '#44b649'];
         var arXAxisCatgs = [], seriesData = [];
@@ -340,8 +394,59 @@ Ext.define('DGPortal.view.ColumnBar', {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(policyName, exposedVal);
             } else {
-                var xAxisData = new exposedXAxisData(source);
+                var xAxisData = new XAxisData(source);
                 xAxisData.addSeriesData(policyName, exposedVal);
+                xAxisCatgsMap.add(source, xAxisData);
+            }
+
+            //adding unique policyName to hashMap
+            if (!sdMap.containsKey(policyName)) {
+                sdMap.add(policyName, { name: policyName, data: [] });
+            }
+
+        }, this);
+
+        xAxisCatgsMap.each(function (key, value, length) {
+            arXAxisCatgs.push(key);
+            var seriesData = value.seriesData;
+            sdMap.each(function (key, value, length) {
+                if (seriesData.containsKey(key)) {
+                    var dataVal = seriesData.get(key).data[0];
+                    value.data.push(dataVal);
+                }
+                else {
+                    value.data.push(0);
+                }
+            });
+        });
+        this.dataObj.xAxisCategories = arXAxisCatgs;
+        this.dataObj.series = sdMap.getValues();
+    },
+
+
+    //method for populating monitored chart data
+    populateMonitoredData: function (arData) {
+        
+        this.dataObj.colors = ['#ec297b', '#fdbf2d', '#0071ce', '#f5852b', '#44b649'];
+        var arXAxisCatgs = [], seriesData = [];
+        var xAxisCatgsMap = new Ext.util.HashMap();
+        var sdMap = new Ext.util.HashMap();
+
+        //looping on data read from restApi
+        sourceList.forEach(function (element, index, array) {
+            //  var objValue = JSON.parse(element.value);
+            var objValue = element.value;
+            var source = objValue.source.toUpperCase();
+            var policyName = objValue.policyName.toUpperCase();
+            var monitoredVal = objValue.monitored;
+
+            //adding unique sources to hashMap
+            if (xAxisCatgsMap.containsKey(source)) {
+                var xAxisData = xAxisCatgsMap.get(source);
+                xAxisData.addSeriesData(policyName, monitoredVal);
+            } else {
+                var xAxisData = new XAxisData(source);
+                xAxisData.addSeriesData(policyName, monitoredVal);
                 xAxisCatgsMap.add(source, xAxisData);
             }
 
@@ -371,13 +476,30 @@ Ext.define('DGPortal.view.ColumnBar', {
 
 });
 
+
+
 //class for saving xAxis data for Exposed chart.
-function exposedXAxisData(sourceName) {
+function XAxisData(sourceName) {
     this.source = sourceName;
     this.seriesData = new Ext.util.HashMap();
 }
 
-//method to add series data in exposedXAxisData object.
+
+// //class for saving xAxis data for Monitored chart.
+// function monitoredXAxisData(sourceName) {
+//     this.source = sourceName;
+//     this.seriesData = new Ext.util.HashMap();
+// }
+
+
+
+// //class for saving xAxis data for Unscanned chart.
+// function unscannedXAxisData(sourceName) {
+//     this.source = sourceName;
+//     this.seriesData = new Ext.util.HashMap();
+// }
+
+//method to add series data in XAxisData object.
 function addSeriesData(series, value) {
     var seriesName = series;
     if (this.seriesData.containsKey(seriesName)) {
@@ -390,6 +512,7 @@ function addSeriesData(series, value) {
     }
 }
 
+
 sourceList = [
     {
         name: 'MongoDb',
@@ -397,7 +520,10 @@ sourceList = [
             source: 'Mongodb',
             policyId: 3,
             policyName: 'PII_DBMS',
-            exposed: 2
+            exposed: 2,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'NoSQL'
         }
     },
     {
@@ -406,7 +532,10 @@ sourceList = [
             source: 'mongoDb',
             policyId: 3,
             policyName: 'pci_dbms',
-            exposed: 4
+            exposed: 4,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'SQL'
         }
     },
     {
@@ -415,7 +544,10 @@ sourceList = [
             source: 'MongoDb',
             policyId: 3,
             policyName: 'HIPAA_DBMS',
-            exposed: 6
+            exposed: 6,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'structured'
         }
     },
     {
@@ -424,7 +556,10 @@ sourceList = [
             source: 'SQL Server',
             policyId: 3,
             policyName: 'PCI_DBMS',
-            exposed: 15
+            exposed: 15,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'Unstructured'
         }
     },
     {
@@ -433,7 +568,10 @@ sourceList = [
             source: 'SQL Server',
             policyId: 3,
             policyName: 'HIPAA_DBMS',
-            exposed: 20
+            exposed: 20,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'Unstructured'
         }
     },
     {
@@ -442,7 +580,10 @@ sourceList = [
             source: 'Hadoop',
             policyId: 3,
             policyName: 'r_policy',
-            exposed: 30
+            exposed: 30,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'Unstructured'
         }
     },
     {
@@ -451,7 +592,10 @@ sourceList = [
             source: 'Hadoop',
             policyId: 3,
             policyName: '',
-            exposed: 50
+            exposed: 50,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'CSV'
         }
     },
     {
@@ -460,7 +604,11 @@ sourceList = [
             source: 'SQL Server',
             policyId: 3,
             policyName: 'PII_DBMS',
-            exposed: 100
+            exposed: 100,
+            monitored: 2,
+            unscanned: 2,
+            contentType: 'CSV'
         }
     }
 ];
+
