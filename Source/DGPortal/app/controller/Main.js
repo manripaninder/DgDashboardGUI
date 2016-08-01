@@ -13,12 +13,12 @@ Ext.define('DGPortal.controller.Main', {
     },
     onLaunch: function () {
         // var assetsInScope = Ext.getCmp();
-        // var sources = Ext.data.StoreManager.lookup('Sources'); //this.getSourcesStore();
-        // sources.load({
-        //     // callback: this.onSourcesLoad,
-        //     // scope: this
-        // });
-        //console.log("Main Controller init is called  dsfgdsgsd.");
+        var sources = Ext.data.StoreManager.lookup('Sources'); //this.getSourcesStore();
+        sources.load({
+            callback: this.onSourcesLoad,
+            scope: this
+        });
+        console.log("Main Controller init is called  dsfgdsgsd.");
         // Ext.Ajax.request({
         //     url: DGPortal.Constants.API_URL,
         //     //url: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/clusters/clouderaCluster',

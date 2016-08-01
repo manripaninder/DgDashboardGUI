@@ -61,16 +61,16 @@ Ext.define('DGPortal.view.AssetsInScope', {
 
                     tempItems = [];
 
-                    // var actGauge_KM1 = Ext.create('DGPortal.view.Gauge', {
-                    //     id: "Gauge_KM1",
-                    //     //kmType: 'KM1',
-                    //     dataObj: {
-                    //         yVal: 100,
-                    //         title: '6 SOURCES',
-                    //         subtitle: '6'
-                    //     }
-                    // });
-                    // tempItems.push(actGauge_KM1);
+                    var actGauge_KM1 = Ext.create('DGPortal.view.Gauge', {
+                        id: "Gauge_KM1",
+                        //kmType: 'KM1',
+                        dataObj: {
+                            yVal: 100,
+                            title: '6 SOURCES',
+                            subtitle: '6'
+                        }
+                    });
+                    tempItems.push(actGauge_KM1);
                     var actGauge_KM2 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM2",
                         dataObj: {
@@ -118,11 +118,11 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     tempItems.push(actGauge_KM6);
                     tempItems.forEach(function (item, index, array) {
                         item.symbolPath = km_symbolData[index];
-                        item.columnWidth = 0.16;
+                        item.columnWidth = 0.13333333;
                         item.bindStore(store, true);
                     });
 
-                    //this.items.add(actGauge_KM1);
+                    this.items.add(actGauge_KM1);
                     this.items.add(actGauge_KM2);
                     this.items.add(actGauge_KM3);
                     this.items.add(actGauge_KM4);

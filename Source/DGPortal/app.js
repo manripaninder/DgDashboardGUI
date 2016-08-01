@@ -46,12 +46,10 @@ Ext.Loader.setConfig({
 Ext.application({
     name: 'DGPortal',
 
-    requires: ['DGPortal.Constants', 'Ext.data.Store','Ext.layout.container.Table','Ext.form.field.ComboBox','Ext.form.Label',
-    'Ext.data.proxy.Rest','Ext.layout.container.Column'
-    ],
+    requires: ['DGPortal.Constants', 'Ext.data.Store'],
 
     views: [
-        'Viewport','AssetsInScope','AssetsInScopeLeftRect','Gauge','LineChart','OCSection','SectionHeader','ColumnBar'
+        'Viewport'
     ],
 
     controllers: [
@@ -59,7 +57,7 @@ Ext.application({
     ],
 
     stores: [
-        'Sources', 'Protected', 'Exposed', 'Monitored', 'Unscanned'
+        'Sources','Protected'
         // TODO: add stores here
     ],
 

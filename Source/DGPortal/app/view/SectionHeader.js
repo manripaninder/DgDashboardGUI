@@ -29,39 +29,39 @@ Ext.define('DGPortal.view.SectionHeader', {
                 color: '#0d2240 '
             }
         },
-        // {
-        //     xtype: 'panel',
-        //     layout: 'hbox',
-        //     columnWidth: 0.32,
-        //     items: [
-        //         {
-        //             xtype: 'label',
-        //             text: 'SHOW',
-        //             style: {
-        //                 fontFamily: 'montserratregular',
-        //                 fontSize: '15px',
-        //                 marginLeft: '40px',
-        //                 marginTop: '3px',
-        //                 color: '#555555 ',
-        //                 //textAlign: 'right'
-        //             }
+        {
+            xtype: 'panel',
+            layout: 'hbox',
+            columnWidth: 0.32,
+            items: [
+                {
+                    xtype: 'label',
+                    text: 'SHOW',
+                    style: {
+                        fontFamily: 'montserratregular',
+                        fontSize: '15px',
+                        marginLeft: '40px',
+                        marginTop: '3px',
+                        color: '#555555 ',
+                        //textAlign: 'right'
+                    }
 
-        //         },
-        //         {
-        //             xtype: 'combo',
-        //             value: 'ALL CHARTS',
-        //             //width: 250,
-        //             editable: false,
-        //             store: ['ALL CHARTS', 'CLOUD', 'ON-PREMISE'],
-        //             style: {
-        //                 fontFamily: 'montserratregular',
-        //                 marginLeft: '20px',                      
-        //                 //paddingTop: '3px',
-        //                 color: '#0071ce',
-        //                 // textAlign: 'left'
-        //             }
-        //         }
-        //     ]
-        // }
+                },
+                {
+                    xtype: 'combo',
+                    value: 'ALL CHARTS',
+                    //width: 250,
+                    editable: false,
+                    store: ['ALL CHARTS', 'CLOUD', 'ON-PREMISE'],
+                    style: {
+                        fontFamily: 'montserratregular',
+                        marginLeft: '20px',                      
+                        //paddingTop: '3px',
+                        color: '#0071ce',
+                        // textAlign: 'left'
+                    }
+                }
+            ]
+        }
     ]
 });
