@@ -105,7 +105,6 @@ Ext.define('DGPortal.view.LineChart', {
                 yAxis: {
                     gridLineDashStyle: 'solid',
                     offset: 10,
-                    endOnTick:false,
                     title: {
                         enabled: false,
                     },
