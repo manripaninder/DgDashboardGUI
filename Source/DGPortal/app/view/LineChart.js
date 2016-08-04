@@ -64,6 +64,28 @@ Ext.define('DGPortal.view.LineChart', {
             this.refresh();
         }
     },
+    // private
+    onLoad: function () {
+        this.log(this.store);
+        this.log('OnLoad of ' + this.id + " is called.");
+        if (!this.chart) {
+            this.log("Call refresh from onLoad for initAnim");
+            //this.buildInitData();
+            //this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
+            this.drawChart();
+            if (this.afterGaugeRendered) (this.afterGaugeRendered());
+            return;
+        }
+
+        this.log("Call refresh from onLoad of " + this.id);
+        //this.refreshOnLoad && this.refresh();
+        this.refresh();
+    },
+
+    refresh: function () {
+        //apply logic for updating values from store
+        this.chart.redraw();
+    },
 
     drawChart: function () {
         this.log(this.rendered);
@@ -75,24 +97,16 @@ Ext.define('DGPortal.view.LineChart', {
                     borderColor: '#cccccc',
                     renderTo: this.getId(),
                     spacingBottom: 0,
-                    //marginTop: 2,
-                    // spacingLeft: 2,
-                    // spacingRight: 10,
-                    // height: 176,
-                    // width: 410,
-                    // marginBottom: 50,
-                    // marginLeft:35
 
                 },
                 colors: ['#e61d27', '#fdbf2d', '#0071cd', '#44b649', '#f6852a'],
                 xAxis: {
-                    categories: ['JAN', 'MAR', 'MAY',
-                        'JUL', 'SEP', 'NOV'],
+                    categories: ['Jan', 'Mar', 'May',
+                        'Jul', 'Sep', 'Nov'],
                     tickWidth: 0,
-                    lineWidth: 0,
+                    lineWidth: 1,
                     gridLineWidth: 0,
                     minorGridLineWidth: 0,
-                    lineColor: 'transparent',
                     labels: {
                         style: {
                             fontSize: '8px',
@@ -104,25 +118,23 @@ Ext.define('DGPortal.view.LineChart', {
                 },
                 yAxis: {
                     gridLineDashStyle: 'solid',
+                    endOnTick: false,
                     offset: 10,
-                    endOnTick:false,
                     title: {
                         enabled: false,
                     },
                     labels: {
                         align: 'right',
-                        x: 10,
-                        y: -2,
-                        // tickInterval: 2,
-                        // tickAmount: 4
+
+                        tickInterval: 0,
+                        tickAmount: 4
                     }
                 },
-                // tooltip: {
-                //     valueSuffix: '�C'
-                // },
+
                 title: {
                     align: "left",
                     text: this.chartTitle,
+
                     style: {
                         color: '#0071ce',
                         fontSize: '13px',
@@ -134,17 +146,26 @@ Ext.define('DGPortal.view.LineChart', {
                 credits: {
                     enabled: false
                 },
-                exports: {
-                    button: 'null'
+                exporting: {
+                    buttons: {
+                        contextButton: {
+                            enabled: true,
+                            menuItems: null,
+                            onclick: function () {
+                                createGraph(this);
+                            }
+                        }
+                    }
                 },
                 legend: {
-                    align: 'center',
-                    itemMarginBottom: 0,
+                    align: 'left',
+                    // itemMarginBottom: 3,
                     itemStyle: {
-                        fontSize: '8px',
+                        fontSize: '10px',
                         //fontWeight: 'bold',
                         fontFamily: 'montserratregular',
                         color: '#646464'
+
                     },
                     symbolHeight: 10,
                     symbolWidth: 10,
@@ -159,13 +180,15 @@ Ext.define('DGPortal.view.LineChart', {
                         }
                     }
                 },
+
+
+
                 series: [{
                     name: 'Exposed',
                     data: [50, 150, 200, 100, 60, 290],
                     marker: {
                         symbol: 'circle'
                     }
-
                 }, {
                         name: 'Masked',
                         data: [100, 100, 50, 200, 300, 180],
@@ -196,29 +219,7 @@ Ext.define('DGPortal.view.LineChart', {
                     }]
             }
         );
-    },
 
-    // private
-    onLoad: function () {
-        this.log(this.store);
-        this.log('OnLoad of ' + this.id + " is called.");
-        if (!this.chart) {
-            this.log("Call refresh from onLoad for initAnim");
-            //this.buildInitData();
-            //this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
-            this.drawChart();
-            if (this.afterGaugeRendered) (this.afterGaugeRendered());
-            return;
-        }
-
-        this.log("Call refresh from onLoad of " + this.id);
-        //this.refreshOnLoad && this.refresh();
-        this.refresh();
-    },
-
-    refresh: function () {
-        //apply logic for updating values from store
-        this.chart.redraw();
     },
 
     listeners: {
@@ -230,3 +231,36 @@ Ext.define('DGPortal.view.LineChart', {
     }
 
 });
+
+
+
+//function to render chartConfig in new chart
+function createGraph(obj) {
+    hs.htmlExpand(document.getElementById(obj.renderTo), {
+        width: 9999,
+        height: 9999,
+        allowWidthReduction: true,
+        preserveContent: false
+    }, {
+            chartOptions: obj.options
+        });
+    var chart = new Highcharts.Chart(chartOptions);
+
+
+}
+
+// Create a new chart on Highslide popup open
+hs.Expander.prototype.onAfterExpand = function () {
+    if (this.custom.chartOptions) {
+        var chartOptions = this.custom.chartOptions;
+
+        if (!this.hasChart) {
+            chartOptions.chart.renderTo = $('.highslide-body')[0];
+            chartOptions.exporting.buttons.contextButton.enabled = false;
+            var hsChart = new Highcharts.Chart(chartOptions);
+        }
+        this.hasChart = true;
+
+    }
+};
+

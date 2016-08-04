@@ -61,6 +61,7 @@ Ext.define('DGPortal.view.SectionHeader', {
                         // textAlign: 'left'
                     }
                 }
+            
             ]
         }
     ]

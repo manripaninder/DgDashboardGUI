@@ -2,7 +2,7 @@ Ext.define('DGPortal.Constants', {
     singleton: true,
     API_URL_Sources: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources',
     API_URL_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/operations',
-    //API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources'
+    API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources',
     getNumberUnit: function (numberVal) {
         if (!isNaN(numberVal)) {
             // Nine Zeroes for Billions

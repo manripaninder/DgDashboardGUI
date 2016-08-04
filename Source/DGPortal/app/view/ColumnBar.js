@@ -1,3 +1,5 @@
+var ExpandIcon = ['resources/images/expandIcon.svg'];
+
 Ext.define('DGPortal.view.ColumnBar', {
     extend: 'Ext.Component',
     alias: 'widget.columnBar',
@@ -5,7 +7,12 @@ Ext.define('DGPortal.view.ColumnBar', {
     margin: '0 0 10 10',
     //padding: '0 0 0 10',
     dataObj: {},
-    chartTitle: null,  
+    chartTitle: null,
+    plotlineColor: '#ffffff',
+    chartYAxisVisible: true,
+    chartLegendEnable: true,
+    chartSubtitle: null,
+    navigateButton: null,
     /***
     * @property {Boolean} debug
     * Switch on the debug logging to the console
@@ -41,10 +48,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     scope: this,
                     load: this.onLoad,
                     datachanged: this.onDataChange
-                    // add: this.onAdd,
-                    // remove: this.onRemove,
-                    // update: this.onUpdate,
-                    // clear: this.onClear
+
                 });
             } catch (e) {
                 this.log(e);
@@ -52,147 +56,186 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
 
         this.store = store;
-
-        // if (this.loadMask !== false) {
-        //     if (this.loadMask === true) {
-        //         this.loadMask = new Ext.LoadMask({ target: this, store: this.store });
-        //     } else {
-        //         this.loadMask.bindStore(this.store);
-        //     }
-        // }
-
         if (store && !initial) {
             this.refresh();
+        }
+
+        if (this.id == 'content') {
+            this.afterChartRendered = this.afterChartRendered_Content;
         }
     },
 
     drawChart: function () {
+
         this.log(this.rendered);
-        this.chart = new Highcharts.Chart(
-            {
-                chart: {
-                    type: 'column',
-                    borderWidth: 0.8,
-                    borderColor: '#cccccc',
-                    spacingBottom: 0,
-                    spacingLeft: 5,
-                    //spacingRight: 10,
-                    // height: 176,
-                    // width: 410,
-                    //marginBottom: 50,
-                    renderTo: this.getId(),
-                    reflow: true
-                    // marginLeft:35
-                },
+        this.chartConfig = {
+            chart: {
+                type: 'column',
+                borderWidth: 0.8,
+                borderColor: '#cccccc',
+                spacingBottom: 0,
+                // spacingLeft: 2,
+                //spacingRight: 10,
+                // height: 176,
+                // width: 410,
+                //marginBottom: 50,
+                renderTo: this.getId(),
+                reflow: true
+                // marginLeft:35
 
-                plotOptions: {
-                    column: {
-                        pointPadding: 0,
-                        borderWidth: 0
-                    }
-                },
-                colors: this.dataObj.colors,
-                xAxis: {
-                    categories: this.dataObj.xAxisCategories,
-                    tickWidth: 0,
-                    lineWidth: 0,
-                    gridLineWidth: 0,
-                    minorGridLineWidth: 0,
-                    lineColor: 'transparent',
-                    labels: {
-                        staggerLines: 0,
-                        rotation: 0,
-                        style: {
-                            fontSize: '8px',
-                            fontFamily: 'montserratregular',
-                            color: '#646464',
-                            //fontWeight: 'bold'
-                        },
-                    }
-                },
-                yAxis: {
-                    // visible: this.chartYAxisVisible,
-                    gridLineWidth: 0,
-                    offset: 10,
-                    title: {
-                        enabled: false,
-                    },
-                    labels: {
-                        // align: 'right',
-                        x: 10,
-                        y: -2,
-                        // formatter: function () {
-                        //     return this.value + "k";
-                        // }
-                    },
-                    //tickInterval: 2,
-                    //tickAmount: 4
-                },
+            },
 
-                credits: {
-                    enabled: false
-                },
-                title: {
-                    align: "left",
-                    text: this.chartTitle,
+            plotOptions: {
+                column: {
+                    pointPadding: 0,
+                    borderWidth: 0
+                }
+            },
+            colors: this.dataObj.colors,
+            xAxis: {
+                categories: this.dataObj.xAxisCategories,
+                tickWidth: 0,
+                lineWidth: 0,
+                gridLineWidth: 0,
+                minorGridLineWidth: 0,
+                plotLines: [{
+                    color: this.plotlineColor,
+                    width: 2,
+                    value: 3.5
+                }],
+                lineColor: 'transparent',
+                labels: {
+                    staggerLines: 0,
+                    rotation: 0,
                     style: {
-                        color: '#0071ce',
-                        fontSize: '13px',
-                        fontWeight: 'bold',
-                        fontFamily: 'montserratregular',
-                        textTransform: 'uppercase'
-                    }
-                },
-                legend: {
-                    // visible: this.chartYAxisVisible,
-                    align: 'center',
-                    itemMarginBottom: 0,
-                    itemStyle: {
                         fontSize: '8px',
-                        fontWeight: 'normal',
                         fontFamily: 'montserratregular',
-                        color: '#646464'
+                        color: '#646464',
+                        //fontWeight: 'bold'
                     },
-                    symbolHeight: 10,
-                    symbolWidth: 10,
-                    itemDistance: 8
+                }
+            },
+            subtitle: {
+                text: this.chartSubtitle,
+                align: 'left',
+                style: {
+                    color: '#cccccc',
+                    fontSize: '13px',
+                    fontWeight: 'bold',
+                    fontFamily: 'montserratregular',
+                    textTransform: 'uppercase',
+
+                }
+            },
+
+            yAxis: {
+                visible: this.chartYAxisVisible,
+                gridLineWidth: 0,
+                endOnTick: false,
+                offset: 10,
+                title: {
+                    enabled: false,
                 },
-                series: this.dataObj.series
-            }
+                labels: {
+                    // align: 'right',
+                    x: 10,
+                    y: -2,
+                    // formatter: function () {
+                    //     return this.value + "k";
+                    // }
+                },
+                //tickInterval: 2,
+                //tickAmount: 4
+            },
+
+            exporting: {
+                buttons: {
+                    contextButton: {
+                        enabled: true,
+                        menuItems: null,
+                        onclick: function () {
+                            createGraph(this);
+                        }
+                    }
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                align: "left",
+                text: this.chartTitle,
+
+                style: {
+                    color: '#0071ce',
+                    fontSize: '13px',
+                    fontWeight: 'bold',
+                    fontFamily: 'montserratregular',
+                    textTransform: 'uppercase',
+
+                }
+            },
+            legend: {
+                visible: this.chartYAxisVisible,
+                align: 'center',
+                itemMarginBottom: 0,
+                itemStyle: {
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    fontFamily: 'montserratregular',
+                    color: '#646464'
+                },
+                symbolHeight: 10,
+                symbolWidth: 10,
+                itemDistance: 8
+            },
+            series: this.dataObj.series,
+        };
+
+        this.chart = new Highcharts.Chart(
+            this.chartConfig
         );
     },
-
     // private
     onLoad: function (_this, records) {
         this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071ce', '#44b649', '#f5852b'];
         this.dataObj.xAxisCategories = ['RS-LAKE', 'STG-LAKE', 'TDS', 'DB2', 'DW1', 'APS-HIVE', 'SOC-S3', 'STM-SS3'];
         this.dataObj.series = [{
-            name: 'Exposed',
-            data: [9.9, 7.5, 10.4, 12.2, 14.0, 17.0, 13.6, 14.5]//data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]// 
+            name: 'Total',
+            groupPadding: .16,
+            color: 'rgba(204,204,204,.5)',
+            grouping: false,
+            showInLegend: false,
+            data: this.maxarray
         }, {
+                name: 'Exposed',
+                data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]
+            }, {
                 name: 'Masked',
-                data: [8.6, 7.8, 9.5, 3.4, 10.0, 4.5, 10.0, 10.3]// data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]//
+                data: [54009, 84621, 121004, 10152, 15540, 84562, 41236, 52148]
             }, {
                 name: 'Monitored',
-                data: [8.9, 38.8, 39.3, 41.4, 47.0, 18.3, 43.0, 29.6]//data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]//
+                data: [45009, 75321, 32004, 10152, 15540, 46325, 68523, 36521]
             }, {
                 name: 'Cleaned',
-                data: [32.4, 33.2, 34.5, 39.7, 22.6, 45.5, 37.4, 34.4] //data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]//
+                data: [86009, 95123, 54004, 10152, 15540, 26548, 131216, 85412]
             }, {
                 name: 'Unscanned',
-                data: [42.4, 33.2, 34.5, 39.7, 12.6, 22.5, 27.4, 33.4]//data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]//
+                data: [92009, 35789, 65004, 41152, 15540, 68425, 62547, 32145]
             }];
+
+
 
         this.getStoreData(records);
 
         this.log(this.store);
         this.log('OnLoad of ' + this.id + " is called.");
         if (!this.chart) {
-            this.log("Creating chart of " + this.id);
+            this.log("Call refresh from onLoad for initAnim");
             //this.buildInitData();
             //this.chart = new Highcharts.Chart(_this.chartConfig, this.afterChartRendered);
             this.drawChart();
-            if (this.afterGaugeRendered) (this.afterGaugeRendered());
+            if (this.afterChartRendered) (this.afterChartRendered());
             return;
         }
 
@@ -203,10 +246,7 @@ Ext.define('DGPortal.view.ColumnBar', {
 
     onDataChange: function (_this, eOpts) {
         if (this.chart) {
-            debugger;
-            this.populateData(this.readData, _this.dataType);
             console.log(_this.dataType);
-            this.refresh();
             //console.log(eOpts);
             // this.store.clearFilter(true);
             // console.log(this.id + "  after ClearFilter");
@@ -217,9 +257,9 @@ Ext.define('DGPortal.view.ColumnBar', {
 
     refresh: function () {
         //apply logic for updating values from store
-        //this.chart.redraw();
-        this.drawChart();
+        this.chart.redraw();
     },
+
 
 
     listeners: {
@@ -229,6 +269,8 @@ Ext.define('DGPortal.view.ColumnBar', {
             }
         }
     },
+
+
 
     getStoreData: function (records) {
         XAxisData.prototype.addSeriesData = addSeriesData;
@@ -251,12 +293,16 @@ Ext.define('DGPortal.view.ColumnBar', {
                     case 'monitored':
                         this.fetchMonitoredData(arData);
                         break;
+                    case 'content':
+                        this.fetchContentData(arData);
+                        break;
                     default:
                         break;
                 }
             }
         }
     },
+
 
     fetchCASData: function (arData) {
         //adding readData property to collect data when class is instantiated for CAS chart
@@ -286,63 +332,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     }
                 }
             });
-            // var operation = new Ext.data.Operation({
-            //     action: 'read',
-            // });
-
-            // var req = Ext.create('Ext.data.proxy.Ajax', {
-            //     url: url,
-            //     reader: 'json',
-            //     action: 'read',
-            //     requires: 'DGPortal.model.SourceList',
-            //     model: 'DGPortal.model.SourceList',
-            //     listeners:{
-            //         metachange:function(a,b,c){
-            //             console.log(a);
-            //             console.log(b);
-            //             console.log(c);
-            //         }
-            //     }
-            // });
-
-            // req.read(operation);
-
-            // req.doRequest(operation, function (req, b, c, d) {
-            //     if (req && req.response && req.response.responseText) {
-            //         var sourceList = JSON.parse(req.response.responseText).sourceList;
-            //         var objValue = sourceList[0].value;
-            //         console.log(this);
-            //         this.readData.push(objValue);
-            //     }
-            // }, this);
-
-            // if (index == array.length - 1) lastReadOperationDone = true;
-            // this.runChkOnReq = setInterval(function () {
-            //     if (lastReadOperationDone) {
-            //         console.log(this.readData);
-            //         (function () {
-            //             clearInterval(this.runChkOnReq);
-            //         } ());
-            //     }
-            // }, 1000);
-
-            // if (req.reader && req.reader.jsonData && req.reader.jsonData.sourceList) {
-            //     console.log(req.reader.jsonData.sourceList);
-            //     var val = req.reader.jsonData.sourceList[0].value;
-            //     var objValue = JSON.parse(val);
-
-            //     arXAxisCatgs.push(objValue.source)
-            //     if (objValue.exposed) { exposed.push(objValue.exposed) };
-            //     if (objValue.maskedEncryted) { masked.push(objValue.maskedEncryted) };
-            //     if (objValue.monitored) { monitored.push(objValue.monitored) };
-            //     if (objValue.clean) { cleaned.push(objValue.clean) };
-            //     if (objValue.unscanned) { unscanned.push(objValue.unscanned) };
-            // }
         });
-
-
-        // console.log(arXAxisCatgs);
-        // console.log(this.dataObj.series);
     },
 
     populateCASData: function (readData) {
@@ -470,13 +460,13 @@ Ext.define('DGPortal.view.ColumnBar', {
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
             var contentType = objValue.contentType.toUpperCase();
-            var serverType = objValue.serverType.toUpperCase();
+            var sourceLocation = objValue.sourceLocation.toUpperCase();
             var unscannedVal = objValue.unscanned;
             if (xAxisCatgsMap.containsKey(source)) {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(contentType, unscannedVal);
             } else {
-                var xAxisData = new XAxisData(source, serverType);
+                var xAxisData = new XAxisData(source, sourceLocation);
                 xAxisData.addSeriesData(contentType, unscannedVal);
                 xAxisCatgsMap.add(source, xAxisData);
             }
@@ -571,7 +561,8 @@ Ext.define('DGPortal.view.ColumnBar', {
         // this.dataObj.series = sdMap.getValues();
     },
 
-    populateData: function (readData, serverType) {
+
+    populateData: function (readData, sourceLocation) {
         var arXAxisCatgs = [];
         var sdMap = new Ext.util.HashMap();
         this.arSeriesLegends.forEach(function (item, index, array) {
@@ -579,7 +570,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         });
         if (readData && Array.isArray(readData)) {
             readData.forEach(function (xAxisCatObj, index, array) {
-                if (serverType == 'ALL' || xAxisCatObj.serverType == serverType) {
+                if (sourceLocation == 'ALL' || xAxisCatObj.sourceLocation == sourceLocation) {
                     arXAxisCatgs.push(xAxisCatObj.source);
                     var seriesData = xAxisCatObj.seriesData;
                     sdMap.each(function (key, value, length) {
@@ -597,19 +588,183 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = sdMap.getValues();
-    }
+    },
 
+
+    //method for populating content chart data
+    fetchContentData: function (arData) {
+        this.dataObj.colors = ['#ec297b', '#fdbf2d', '#0071ce', '#f5852b', '#44b649'];
+        var xAxisCatgsMap = new Ext.util.HashMap();
+       	this.arSeriesLegends = [];
+
+        //looping on data read from restApi
+        arData.forEach(function (element, index, array) {
+            var objValue = JSON.parse(element.value);
+            //var objValue = element.value;
+            console.log(objValue);
+            var source = objValue.source.toUpperCase();
+            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var contentType = objValue.contentType.toUpperCase();
+            var fileTableCount = objValue.fileTableCount;
+            //adding unique sources to hashMap
+            if (xAxisCatgsMap.containsKey(source)) {
+                var xAxisData = xAxisCatgsMap.get(source);
+                xAxisData.addSeriesData(contentType, fileTableCount);
+            } else {
+                var xAxisData = new XAxisData(source, sourceLocation);
+                xAxisData.addSeriesData(contentType, fileTableCount);
+                xAxisCatgsMap.add(source, xAxisData);
+            }
+            //adding unique policyName to legends array
+            if (!this.arSeriesLegends.includes(contentType)) {
+                this.arSeriesLegends.push(contentType);
+            }
+
+
+        }, this);
+
+        this.readData = xAxisCatgsMap.getValues();
+
+        this.populateContentData(this.readData);
+
+        //this.dataObj.xAxisCategories = arXAxisCatgs;
+        // this.dataObj.series = sdMap.getValues();
+    },
+
+    populateContentData: function (readData, filterType) {
+        console.log(readData);
+        var arXAxisCatgs = [];
+        var arCloud = [];
+        var arOnPremises = [];
+
+        var sdMap = new Ext.util.HashMap();
+        this.arSeriesLegends.forEach(function (item, index, array) {
+            sdMap.add(item, { name: item, data: [] });
+        });
+
+        readData.forEach(function (item, index, array) {
+            if (item.sourceLocation == "ON-PREMISE") {
+                arOnPremises.push(item);
+                //    this.chart.renderer.text('Cloud', this.chart.plotSizeX / 4.4, 148)
+                //     .css({
+                //        align:'center'
+                //     })
+                //     .remove();
+            }
+            else if (item.sourceLocation == "CLOUD") {
+                arCloud.push(item);
+                //    this.chart.renderer.text('On-Premise', this.chart.plotSizeX / 1.4, 150)  
+                //    .css({
+                //        align:'center'
+                //     })
+                //     .remove();
+            }
+        });
+
+
+
+        arCloud.forEach(function (item, index, array) {
+            arXAxisCatgs.push(item.source);
+            var seriesData = item.seriesData;
+            sdMap.each(function (key, value, length) {
+                if (seriesData.containsKey(key)) {
+                    var dataVal = seriesData.get(key).data[0];
+                    value.data.push(dataVal);
+                }
+                else {
+                    value.data.push(0);
+                }
+            });
+        });
+
+        arOnPremises.forEach(function (item, index, array) {
+            arXAxisCatgs.push(item.source);
+            var seriesData = item.seriesData;
+            sdMap.each(function (key, value, length) {
+                if (seriesData.containsKey(key)) {
+                    var dataVal = seriesData.get(key).data[0];
+                    value.data.push(dataVal);
+                }
+                else {
+                    value.data.push(0);
+                }
+            });
+        });
+
+        this.dataObj.xAxisCategories = arXAxisCatgs;
+        this.dataObj.series = sdMap.getValues();
+    },
+
+    afterChartRendered_Content: function () { // on complete
+        //  var middle = chart.plotSizeX - 100;
+
+        if (this.chart) {
+
+            this.cloudLabel = this.chart.renderer.text('Cloud', this.chart.plotSizeX / 4.4, 148)
+                .css({
+                    color: '#646464',
+                    fontSize: '10px',
+                    fontFamily: 'montserratregular',
+                    textTransform: 'uppercase',
+                    marginBottom: '10px'
+                })
+                .add();
+            this.OnPremiseLabel = this.chart.renderer.text('On-Premise', this.chart.plotSizeX / 1.4, 150)
+                .css({
+                    color: '#646464',
+                    fontSize: '10px',
+                    fontFamily: 'montserratregular',
+                    textTransform: 'uppercase',
+                })
+                .add();
+        }
+
+    }
 });
 
-//class for saving xAxis data for Exposed chart.
-function XAxisData(sourceName, serverType) {
+hs.Expander.prototype.onAfterExpand = function () {
+    if (this.custom.chartOptions) {
+        var chartOptions = this.custom.chartOptions;
+
+        if (!this.hasChart) {
+            chartOptions.chart.renderTo = $('.highslide-body')[0];
+            chartOptions.exporting.buttons.contextButton.enabled = false;
+            var hsChart = new Highcharts.Chart(chartOptions);
+        }
+        this.hasChart = true;
+
+    }
+};
+
+
+
+function createGraph(obj) {
+    //alert(obj);
+    // set the click event for the parent chart      
+    hs.htmlExpand(document.getElementById(obj.renderTo), {
+        width: 9999,
+        height: 9999,
+        allowWidthReduction: true,
+        preserveContent: false
+    }, {
+            chartOptions: obj.options
+        });
+    var chart = new Highcharts.Chart(chartOptions);
+    // Create a new chart on Highslide popup open
+
+}
+
+//class for saving xAxis data for chart.
+function XAxisData(sourceName, sourceLocation) {
     this.source = sourceName;
-    this.serverType = serverType;
+    this.sourceLocation = sourceLocation;
     this.seriesData = new Ext.util.HashMap();
 }
 
+
 //method to add series data in XAxisData object.
-function addSeriesData(seriesName, value) {
+function addSeriesData(series, value) {
+    var seriesName = series;
     if (this.seriesData.containsKey(seriesName)) {
         var series = this.seriesData.get(seriesName);
         series.data.push(value);
@@ -619,6 +774,9 @@ function addSeriesData(seriesName, value) {
         this.seriesData.add(seriesName, series);
     }
 }
+
+
+
 
 sourceList = [
     {
@@ -631,7 +789,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'NoSQL',
-            serverType: 'On-Premise'
+            sourceLocation: 'On-Premise',
+            fileTableCount: 4
         }
     },
     {
@@ -644,7 +803,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'SQL',
-            serverType: 'On-Premise'
+            sourceLocation: 'On-Premise',
+            fileTableCount: 7
         }
     },
     {
@@ -657,7 +817,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'structured',
-            serverType: 'On-Premise'
+            sourceLocation: 'Cloud',
+            fileTableCount: 9
         }
     },
     {
@@ -670,7 +831,9 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            serverType: 'On-Premise'
+            sourceLocation: 'Cloud',
+            fileTableCount: 3
+
         }
     },
     {
@@ -683,7 +846,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            serverType: 'On-Premise'
+            sourceLocation: 'Cloud',
+            fileTableCount: 1
         }
     },
     {
@@ -696,7 +860,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            serverType: 'OnCloud'
+            sourceLocation: 'On-Premise',
+            fileTableCount: 17
         }
     },
     {
@@ -709,7 +874,8 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'CSV',
-            serverType: 'OnCloud'
+            sourceLocation: 'Cloud',
+            fileTableCount: 10
         }
     },
     {
@@ -722,8 +888,9 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'CSV',
-            serverType: 'On-Premise'
-
+            sourceLocation: 'On-Premise',
+            fileTableCount: 4
         }
     }
 ];
+

@@ -65,28 +65,30 @@ Ext.define('DGPortal.controller.Coverage', {
             });
 
             var columnBar_OC1 = Ext.create('DGPortal.view.ColumnBar', { chartTitle: 'COVERAGE ACROSS SOURCES' });
-            columnBar_OC1.columnWidth = 0.25;
+            columnBar_OC1.columnWidth = 0.33;
             columnBar_OC1.bindStore(sourcesDataStore, true);
 
             var lineChart_OC = Ext.create('DGPortal.view.LineChart', { chartTitle: 'COVERAGE TREND' });
-            lineChart_OC.columnWidth = 0.25;
+            lineChart_OC.columnWidth = 0.33;
             lineChart_OC.bindStore(sourcesDataStore, true);
 
-            var columnBar_OC2 = Ext.create('DGPortal.view.ColumnBar', { chartTitle: 'CONTENT' });
-           columnBar_OC2.bindStore(sourcesDataStore, true);
-           columnBar_OC2.columnWidth = 0.25;
+           var contentStore = Ext.create('DGPortal.store.Content');
+           var columnBar_OC2 = Ext.create('DGPortal.view.ColumnBar', { id:'content',chartTitle: 'CONTENT', plotlineColor:'#cccccc' });
+           columnBar_OC2.bindStore(contentStore, true);
+           columnBar_OC2.columnWidth = 0.33;
 
-            var columnBar_OC3 = Ext.create('DGPortal.view.ColumnBar', { chartTitle: 'USERS' });
-            columnBar_OC3.columnWidth = 0.25;
-            columnBar_OC3.bindStore(sourcesDataStore, true);
+            // var columnBar_OC3 = Ext.create('DGPortal.view.ColumnBar', { chartTitle: 'USERS' });
+            // columnBar_OC3.columnWidth = 0.25;
+            // columnBar_OC3.bindStore(sourcesDataStore, true);
 
             oc_secondChild.add(columnBar_OC1);
             oc_secondChild.add(lineChart_OC);
             oc_secondChild.add(columnBar_OC2);
-            oc_secondChild.add(columnBar_OC3);
+            // oc_secondChild.add(columnBar_OC3);
 
             overallCoveragePanel[0].add(oc_secondChild);
         }
+           contentStore.load();
         //adding charts to Exposure & Protection
         var epPanel = Ext.ComponentQuery.query('#exposureAndProtection');
 
@@ -146,6 +148,7 @@ Ext.define('DGPortal.controller.Coverage', {
         exposedStore.load();
         monitoredStore.load();
         unscannedStore.load();
+     
     }
 
 });

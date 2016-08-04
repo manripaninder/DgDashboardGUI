@@ -16,7 +16,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             style: {
                 fontSize: '40px',
                 color: '#0071cd',                
-                fontFamily: 'helvetica',
+                fontFamily: 'montserratregular',
                 width: '16px'
             },
         },
@@ -27,7 +27,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             {
                 fontSize: '40px',
                 color: '#0071cd',               
-                fontFamily: 'helvetica',
+                fontFamily: 'montserratregular',
                 width: '18px'
             },
         },
