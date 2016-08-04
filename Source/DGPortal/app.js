@@ -49,7 +49,7 @@ Ext.application({
     requires: ['DGPortal.Constants', 'Ext.data.Store'],
 
     views: [
-        'Viewport'
+     'Viewport','AssetsInScope','AssetsInScopeLeftRect','Gauge','LineChart','OCSection','SectionHeader','ColumnBar'
     ],
 
     controllers: [
@@ -57,8 +57,8 @@ Ext.application({
     ],
 
     stores: [
-        'Sources','Protected'
-        // TODO: add stores here
+        'Sources', 'Protected', 'Exposed', 'Monitored', 'Unscanned'
+     
     ],
 
     models: ['SourceList', 'Source'],
