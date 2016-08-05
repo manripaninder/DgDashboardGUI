@@ -6,7 +6,7 @@ Ext.define('DGPortal.store.Protected', {
     model: 'DGPortal.model.SourceList',
     proxy: {
         type: 'rest',
-        url: DGPortal.Constants.API_URL_Operations + '/protected',
+        url: DGPortal.Constants.API_URL_OnPremise_Operations + '/protected',
         reader: 'json'
     }
 });

@@ -6,7 +6,7 @@ Ext.define('DGPortal.store.Monitored', {
     model: 'DGPortal.model.SourceList',
     proxy: {
         type: 'rest',
-        url: DGPortal.Constants.API_URL_Operations + '/monitored',
+        url: DGPortal.Constants.API_URL_OnPremise_Operations + '/monitored',
         reader: 'json'
     }
 });

@@ -2,7 +2,7 @@ Ext.define('DGPortal.store.Sources', {
     extend: 'Ext.data.Store',
     requires: 'DGPortal.model.SourceList',
     model: 'DGPortal.model.SourceList',
-    storeId: 'Sources',
+    //storeId: 'Sources',
     autoLoad: false,
     // proxy: {
     //     type: 'ajax',

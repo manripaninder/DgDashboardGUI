@@ -6,7 +6,7 @@ Ext.define('DGPortal.store.Unscanned', {
     model: 'DGPortal.model.SourceList',
     proxy: {
         type: 'rest',
-        url: DGPortal.Constants.API_URL_Operations + '/unscanned',
+        url: DGPortal.Constants.API_URL_OnPremise_Operations + '/unscanned',
         reader: 'json'
     }
 });

@@ -1,4 +1,6 @@
-var km_symbolData = ['resources/images/sources.svg', 'resources/images/files.svg', 'resources/images/detected-data.svg',
+//'resources/images/sources.svg',
+
+var km_symbolData = ['resources/images/files.svg', 'resources/images/detected-data.svg',
     'resources/images/lock.svg', 'resources/images/info.svg', 'resources/images/unlock.svg']
 
 Ext.define('DGPortal.view.AssetsInScope', {
@@ -27,6 +29,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     margin: '10 5 0 30',
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
+                    allowDepress: false,
                     pressed: true
                 },
                 {
@@ -35,7 +38,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     text: 'ON PREMISE',
                     margin: '10 5 0 10',
                     cls: 'btnAstsInScp',
-                    toggleGroup: 'sources'
+                    toggleGroup: 'sources',
+                    allowDepress: false,
                 },
                 {
                     xtype: 'button',
@@ -43,7 +47,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     text: 'CLOUD',
                     margin: '10 5 0 10',
                     cls: 'btnAstsInScp',
-                    toggleGroup: 'sources'
+                    toggleGroup: 'sources',
+                    allowDepress: false,
                 }
             ]
         }, {
@@ -52,10 +57,10 @@ Ext.define('DGPortal.view.AssetsInScope', {
             layout: 'column',
             listeners: {
                 render: function () {
-                    var store = Ext.create('DGPortal.store.Sources');
-                    console.log("Hi from render of AssetsInScope");
+                    var store = Ext.create('DGPortal.store.Sources', { id: 'Sources' });
+                    //console.log("Hi from render of AssetsInScope");
 
-                    var rectBox = Ext.create('DGPortal.view.AssetsInScopeLeftRect');
+                    var rectBox = Ext.create('DGPortal.view.AssetsInScopeLeftRect', { id: 'aisRectBox' });
                     rectBox.columnWidth = 0.20;
                     this.items.add(rectBox);
 
@@ -122,7 +127,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                         item.bindStore(store, true);
                     });
 
-                    // this.items.add(actGauge_KM1);
+                    //this.items.add(actGauge_KM1);
                     this.items.add(actGauge_KM2);
                     this.items.add(actGauge_KM3);
                     this.items.add(actGauge_KM4);

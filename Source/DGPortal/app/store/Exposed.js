@@ -6,7 +6,7 @@ Ext.define('DGPortal.store.Exposed', {
     model: 'DGPortal.model.SourceList',
     proxy: {
         type: 'rest',
-        url: DGPortal.Constants.API_URL_Operations + '/exposed',
+        url: DGPortal.Constants.API_URL_OnPremise_Operations + '/exposed',
         reader: 'json'
     }
 });

@@ -33,7 +33,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
         },
         {
             xtype: 'label',
-            text: '10',
+            id:'lblOnPremiseTotal',           
             style: {
                 fontSize: '42px',
                 color: '#0071ce',             
@@ -44,7 +44,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
         },
         {
             xtype: 'label',
-            text: '5',
+            id:'lblCloudTotal',           
             style: {
                 fontSize: '42px',
                 color: '#0071ce',                

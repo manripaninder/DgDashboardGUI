@@ -1,8 +1,12 @@
 Ext.define('DGPortal.Constants', {
     singleton: true,
     API_URL_Sources: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources',
-    API_URL_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/operations',
-    API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources',
+    API_URL_OnPremise_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/On-Premise/operations',
+    API_URL_Cloud_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/Cloud/operations',
+    OnPremise: 'ON-PREMISE',
+    Cloud: 'ON-CLOUD',
+    All: 'ALL',
+    //API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources'
     getNumberUnit: function (numberVal) {
         if (!isNaN(numberVal)) {
             // Nine Zeroes for Billions
@@ -32,5 +36,10 @@ Ext.define('DGPortal.Constants', {
             return tableText = (numberVal > 1) ? 'TABLES' : 'TABLE';
         }
         return 'TABLES';
+    },
+    getTwoDigitNum: function (num) {
+        if (!isNaN(num)) {
+            return num > 9 ? num.toString() : '0' + num;
+        }
     }
 });

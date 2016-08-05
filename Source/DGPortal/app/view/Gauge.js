@@ -110,19 +110,20 @@ Ext.define('DGPortal.view.Gauge', {
     },
 
     refresh: function () {
-        this.log("Called refresh of " + this.id);
+        //console.log("Called refresh of " + this.id + this.dataObj.yVal + " Title " + this.dataObj.title + " Subtitle " + this.dataObj.subtitle);
         var point = this.chart.series[0].points[0];
-        point.update(25);
-        var title = this.chart.title;
+        point.update(this.dataObj.yVal);
         this.chart.setTitle({
-            text: 'NEW TITLE '
-        }, { text: '4' });
+            text: this.dataObj.title
+        }, { text: this.dataObj.subtitle });
         this.chart.redraw();
     },
 
     onDataChange: function (_this, eOpts) {
         if (this.chart) {
-            console.log(_this.dataType);
+            this.populateData(this.readData, _this.dataType);
+            this.refresh();
+            //console.log(_this.dataType);
             //console.log(eOpts);
             // this.store.clearFilter(true);
             // console.log(this.id + "  after ClearFilter");
@@ -229,79 +230,157 @@ Ext.define('DGPortal.view.Gauge', {
         //console.log(this.renderedImage);
         if (this.renderedImage) this.renderedImage.destroy();
 
-        var imgHeight = this.symbolPath.includes('lock') ? 16 : 13;
+        var imgHeight = (this.symbolPath.indexOf('lock') != -1) ? 16 : 13;
         var imgWidth = 12;
         var xVal = (this.getWidth() / 2) - (imgWidth / 2);
         this.renderedImage = this.chart.renderer.image(this.symbolPath, xVal, 22, imgWidth, imgHeight).add();
     },
 
     getStoreData: function (records) {
+        this.readData = [];
         //console.log(records);
         if (this.store && this.store.first()) {
             var arData = this.store.first().data.sourceList;
-            if (arData && Array.isArray(arData)) {
-                //console.log(arData);
-                switch (this.id) {
-                    case "Gauge_KM1":
-                        this.dataObj.yVal = 100;
-                        this.dataObj.subtitle = arData.length;
-                        this.dataObj.title = (arData.length > 1) ? arData.length + ' SOURCES' : arData.length + ' SOURCE';
-                        break;
-                    case "Gauge_KM2":
-                        this.dataObj.yVal = 100;
-                        var totalFiles_Tables;
-                        arData.forEach(function (element, index, array) {
-                            objSource = JSON.parse(element.value);
-                            totalFiles_Tables = objSource.totalFileCount + objSource.totalTableCount;
-                        }, this);
-                        this.dataObj.subtitle = totalFiles_Tables;
-                        this.dataObj.title = totalFiles_Tables + " FILES/TABLES";
-                        break;
-                    case "Gauge_KM3":
+            if (arData && arData.length > 0) {
+                arData.forEach(function (element, index, array) {
+                    var objSource = JSON.parse(element.value);
+                    this.readData.push(objSource);
+                }, this);
+                this.populateData(this.readData, DGPortal.Constants.All);
+                // //console.log(arData);
+                // switch (this.id) {
+                //     case "Gauge_KM1":
+                //         this.dataObj.yVal = 100;
+                //         this.dataObj.subtitle = arData.length;
+                //         this.dataObj.title = (arData.length > 1) ? arData.length + ' SOURCES' : arData.length + ' SOURCE';
+                //         break;
+                //     case "Gauge_KM2":
+                //         this.dataObj.yVal = 100;
+                //         var totalFiles_Tables = 0;
+                //         arData.forEach(function (element, index, array) {
+                //             var objSource = JSON.parse(element.value);
+                //             this.readData.push(objSource);
+                //         }, this);
+                //         break;
+                //     case "Gauge_KM3":
 
-                        break;
-                    case "Gauge_KM4":
-                        var totalFiles_Tables, totalProtected, protectedFiles, protectedTables;
-                        arData.forEach(function (element, index, array) {
-                            objSource = JSON.parse(element.value);
-                            totalFiles_Tables = objSource.totalFileCount + objSource.totalTableCount;
-                            protectedFiles = objSource.protectionTableCount;
-                            protectedTables = objSource.protectionFileCount;
-                        }, this);
-                        totalProtected = protectedFiles + protectedTables;
-                        var protectedPercent = (totalProtected / totalFiles_Tables) * 100;
-                        this.dataObj.yVal = +protectedPercent.toFixed(1); //parseFloat(protectedPercent.toPrecision(3));
-                        this.dataObj.subtitle = Math.round(protectedPercent) + '%';
-                        var fileText = DGPortal.Constants.getFileText(protectedFiles);
-                        var tableText = DGPortal.Constants.getTableText(protectedTables);
+                //         break;
+                //     case "Gauge_KM4":
+                //         arData.forEach(function (element, index, array) {
+                //             var objSource = JSON.parse(element.value);
+                //             this.readData.push(objSource);
+                //         }, this);
+                //         break;
+                //     case "Gauge_KM5":
+                //         break;
+                //     case "Gauge_KM6":
+                //         arData.forEach(function (element, index, array) {
+                //             var objSource = JSON.parse(element.value);
+                //             this.readData.push(objSource);
+                //         }, this);
 
-                        this.dataObj.title = 'PROTECTED ' + protectedFiles + ' ' + fileText + '/' +
-                            protectedTables + ' ' + tableText;
-                        break;
-                    case "Gauge_KM5":
-                        break;
-                    case "Gauge_KM6":
-                        var totalFiles_Tables, totalUnscanned, unscannedFiles, unscannedTables;
-                        arData.forEach(function (element, index, array) {
-                            objSource = JSON.parse(element.value);
-                            totalFiles_Tables = objSource.totalFileCount + objSource.totalTableCount;
-                            unscannedFiles = objSource.unscannedFileCount;
-                            unscannedTables = objSource.unscannedTableCount;
-                        }, this);
-                        totalUnscanned = unscannedFiles + unscannedTables;
-                        var unscannedPercent = ((unscannedFiles + unscannedTables) / totalFiles_Tables) * 100;
-
-                        var fileText = DGPortal.Constants.getFileText(unscannedFiles);
-                        var tableText = DGPortal.Constants.getTableText(unscannedTables);
-
-                        this.dataObj.yVal = +unscannedPercent.toFixed(1);
-                        this.dataObj.subtitle = Math.round(unscannedPercent) + '%';
-                        this.dataObj.title = 'UNSCANNED ' + unscannedFiles + ' ' + fileText + '/' +
-                            unscannedTables + ' ' + tableText;
-                        break;
-                }
+                //         break;
+                // }
             }
 
+        }
+    },
+
+    populateData: function (readData, filterType) {
+        this.dataObj.yVal = 0;
+        this.dataObj.subtitle = "0";
+        this.dataObj.title = "No Data";
+        if (readData && readData.length > 0) {
+            switch (this.id) {
+                case "Gauge_KM2":
+                    var totalFiles_Tables = 0;
+                    readData.forEach(function (item, index, array) {
+                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                            totalFiles_Tables += item.totalFileCount + item.totalTableCount;
+                        }
+                    }, this);
+                    this.dataObj.yVal = totalFiles_Tables > 0 ? 100 : 0;
+                    this.dataObj.subtitle = totalFiles_Tables.toString();
+                    this.dataObj.title = totalFiles_Tables + " FILES/TABLES";
+                    break;
+                case "Gauge_KM3":
+                    var totalFiles_Tables = 0, totalOperation = 0, operationFiles = 0, operationTables = 0;
+                    readData.forEach(function (item, index, array) {
+                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                            totalFiles_Tables += item.totalFileCount + item.totalTableCount;
+                            operationFiles += item.operationFileCount;
+                            operationTables += item.operationTableCount;
+                        }
+                    }, this);
+                    totalOperation = operationFiles + operationTables;
+                    var operationPercent = (totalOperation / totalFiles_Tables) * 100;                 
+                    this.dataObj.yVal = operationPercent ? +operationPercent.toFixed(1) : 0; //parseFloat(operationPercent.toPrecision(3));
+                    this.dataObj.subtitle = operationPercent ? Math.round(operationPercent) + '%' : '0%';
+                    var fileText = DGPortal.Constants.getFileText(operationFiles);
+                    var tableText = DGPortal.Constants.getTableText(operationTables);
+
+                    this.dataObj.title = 'DETECTED ' + operationFiles + ' ' + fileText + '/' +
+                        operationTables + ' ' + tableText;
+                    break;
+                case "Gauge_KM4":
+                    var totalFiles_Tables = 0, totalProtected = 0, protectedFiles = 0, protectedTables = 0;
+                    readData.forEach(function (item, index, array) {
+                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                            totalFiles_Tables += item.totalFileCount + item.totalTableCount;
+                            protectedFiles += item.protectionTableCount;
+                            protectedTables += item.protectionFileCount;
+                        }
+                    }, this);
+                    totalProtected = protectedFiles + protectedTables;
+                    var protectedPercent = (totalProtected / totalFiles_Tables) * 100;
+                    this.dataObj.yVal = +protectedPercent.toFixed(1); //parseFloat(protectedPercent.toPrecision(3));
+                    this.dataObj.subtitle = protectedPercent ? Math.round(protectedPercent) + '%' : '0%';
+                    var fileText = DGPortal.Constants.getFileText(protectedFiles);
+                    var tableText = DGPortal.Constants.getTableText(protectedTables);
+
+                    this.dataObj.title = 'PROTECTED ' + protectedFiles + ' ' + fileText + '/' +
+                        protectedTables + ' ' + tableText;
+                    break;
+                case "Gauge_KM5":
+                    var totalFiles_Tables = 0, totalMonitored = 0;
+                    readData.forEach(function (item, index, array) {
+                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                            totalFiles_Tables += item.totalFileCount + item.totalTableCount;
+                            totalMonitored += (item.monitoredFileCount + item.monitoredTableCount);
+                        }
+                    }, this);
+
+                    totalMonitored = DGPortal.Constants.getNumberUnit(totalMonitored);
+
+                    var monitoredPercent = (totalMonitored / totalFiles_Tables) * 100;
+
+                    var fileText = DGPortal.Constants.getFileText(totalMonitored);
+
+                    this.dataObj.yVal = +monitoredPercent.toFixed(1);
+                    this.dataObj.subtitle = monitoredPercent ? Math.round(monitoredPercent) + '%' : '0%';
+                    this.dataObj.title = 'ALERTED IN LAST 24HRS ' + totalMonitored + ' ' + fileText;
+                    break;
+                case "Gauge_KM6":
+                    var totalFiles_Tables = 0, totalUnscanned = 0, unscannedFiles = 0, unscannedTables = 0;
+                    readData.forEach(function (item, index, array) {
+                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                            totalFiles_Tables += item.totalFileCount + item.totalTableCount;
+                            unscannedFiles += item.unscannedFileCount;
+                            unscannedTables += item.unscannedTableCount;
+                        }
+                    }, this);
+                    totalUnscanned = unscannedFiles + unscannedTables;
+                    var unscannedPercent = ((unscannedFiles + unscannedTables) / totalFiles_Tables) * 100;
+
+                    var fileText = DGPortal.Constants.getFileText(unscannedFiles);
+                    var tableText = DGPortal.Constants.getTableText(unscannedTables);
+
+                    this.dataObj.yVal = +unscannedPercent.toFixed(1);
+                    this.dataObj.subtitle = unscannedPercent ? Math.round(unscannedPercent) + '%' : '0%';
+                    this.dataObj.title = 'UNSCANNED ' + unscannedFiles + ' ' + fileText + '/' +
+                        unscannedTables + ' ' + tableText;
+                    break;
+            }
         }
     }
 
