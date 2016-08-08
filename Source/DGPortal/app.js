@@ -46,12 +46,12 @@ Ext.Loader.setConfig({
 Ext.application({
     name: 'DGPortal',
 
-    requires: ['DGPortal.Constants', 'Ext.data.Store','Ext.layout.container.Table','Ext.form.field.ComboBox','Ext.form.Label',
-    'Ext.data.proxy.Rest','Ext.layout.container.Column'
+    requires: ['DGPortal.Constants', 'Ext.data.Store', 'Ext.layout.container.Table', 'Ext.form.field.ComboBox', 'Ext.form.Label',
+        'Ext.data.proxy.Rest', 'Ext.layout.container.Column'
     ],
 
     views: [
-        'Viewport','AssetsInScope','AssetsInScopeLeftRect','Gauge','LineChart','OCSection','SectionHeader','ColumnBar'
+        'Viewport', 'AssetsInScope', 'AssetsInScopeLeftRect', 'Gauge', 'LineChart', 'OCSection', 'SectionHeader', 'ColumnBar'
     ],
 
     controllers: [
@@ -59,7 +59,7 @@ Ext.application({
     ],
 
     stores: [
-        'Sources', 'Protected', 'Exposed', 'Monitored', 'Unscanned','Content'
+        'Sources', 'Protected', 'Exposed', 'Monitored', 'Unscanned', 'Content'
         // TODO: add stores here
     ],
 
@@ -67,3 +67,26 @@ Ext.application({
 
     autoCreateViewport: true
 });
+
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (obj, start) {
+        for (var i = (start || 0), j = this.length; i < j; i++) {
+            if (this[i] === obj) { return i; }
+        }
+        return -1;
+    }
+}
+
+if (!Array.prototype.isArray) {
+    Array.isArray = function (obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    };
+}
+
+if (!Array.prototype.forEach ) {
+  Array.prototype.forEach = function(fn, scope) {
+    for(var i = 0, len = this.length; i < len; ++i) {
+      fn.call(scope, this[i], i, this);
+    }
+  };
+}

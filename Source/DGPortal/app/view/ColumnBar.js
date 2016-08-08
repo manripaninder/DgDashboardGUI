@@ -67,6 +67,15 @@ Ext.define('DGPortal.view.ColumnBar', {
     drawChart: function () {
 
         this.log(this.rendered);
+
+ Highcharts.setOptions(
+            {
+                lang:
+                {
+                    noData: "No Data To Display"
+                }
+            }
+        );
         this.chartConfig = {
             chart: {
                 type: 'column',
@@ -136,7 +145,8 @@ Ext.define('DGPortal.view.ColumnBar', {
                         menuItems: null,
                         onclick: function () {
                             createGraph(this);
-                        }
+                        },
+
                     }
                 }
             },
@@ -303,9 +313,9 @@ Ext.define('DGPortal.view.ColumnBar', {
                             if (records.store.data && records.store.data.items.length > 0) {
                                 var arData = [];
                                 var items = records.store.data.items;
-                                items.forEach(function (item, index, array) {
+                                Ext.each(items, function (item, index, array) {
                                     if (item.data && item.data.sourceList) {
-                                        item.data.sourceList.forEach(function (item, index, array) {
+                                        Ext.each(item.data.sourceList, function (item, index, array) {
                                             arData.push(item);
                                         });
                                     }
@@ -337,7 +347,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.readData = [];
         var lastReadOperationDone = false;
         var storeObj = Ext.create('DGPortal.store.Sources');
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             // debugger;
             var objValue = JSON.parse(element.value);
             var source = objValue.source;
@@ -375,7 +385,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         var unscanned = { name: 'UNSCANNED', data: [] };
         var arXAxisCatgs = [];
         if (readData && Array.isArray(readData)) {
-            readData.forEach(function (element, index, array) {
+            Ext.each(readData, function (element, index, array) {
                 if (sourceLocation == DGPortal.Constants.All || sourceLocation == element.sourceLocation.toUpperCase()) {
                     arXAxisCatgs.push(element.source.toUpperCase());
                     exposed.data.push(element.exposed);
@@ -396,11 +406,11 @@ Ext.define('DGPortal.view.ColumnBar', {
     fetchProtectedData: function (arData) {
         //adding readData property to collect data.
         this.readData = [];
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
-            this.readData.push(objValue);
+            this.readData.push(objValue);           
         }, this);
-        this.populateProtectedData(this.readData);
+        this.populateProtectedData(this.readData, DGPortal.Constants.All);
     },
 
     populateProtectedData: function (readData, sourceLocation) {
@@ -411,7 +421,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         var encrypted = { name: 'ENCRYPTED', data: [] };
         var monitored = { name: 'MONITORED', data: [] };
         if (readData && Array.isArray(readData)) {
-            readData.forEach(function (element, index, array) {
+            Ext.each(readData, function (element, index, array) {
                 if (sourceLocation == DGPortal.Constants.All || element.sourceLocation.toUpperCase() == sourceLocation) {
                     masked.data.push(element.masked);
                     encrypted.data.push(element.encrytionDone);
@@ -422,6 +432,8 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = [masked, encrypted, monitored];
+        // console.log(this.dataObj.xAxisCategories);
+        // console.log(this.dataObj.series);
         this.drawChart();
     },
 
@@ -434,7 +446,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.arSeriesLegends = [];
 
         //looping on data read from restApi
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
@@ -453,7 +465,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             }
 
             //adding unique policyName to legends array
-            if (!this.arSeriesLegends.includes(policyName)) {
+            if (this.arSeriesLegends.indexOf(policyName) == -1) {
                 this.arSeriesLegends.push(policyName);
             }
 
@@ -471,7 +483,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         var xAxisCatgsMap = new Ext.util.HashMap();
         this.arSeriesLegends = [];
 
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
@@ -488,7 +500,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             }
 
             //adding unique contentType to legends array
-            if (!this.arSeriesLegends.includes(contentType)) {
+            if (this.arSeriesLegends.indexOf(contentType) == -1) {
                 this.arSeriesLegends.push(contentType);
             }
 
@@ -506,7 +518,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.arSeriesLegends = [];
 
         //looping on data read from restApi
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
@@ -525,7 +537,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             }
 
             //adding unique policyName to legends array
-            if (!this.arSeriesLegends.includes(policyName)) {
+            if (this.arSeriesLegends.indexOf(policyName) == -1) {
                 this.arSeriesLegends.push(policyName);
             }
 
@@ -540,11 +552,11 @@ Ext.define('DGPortal.view.ColumnBar', {
         var arXAxisCatgs = [];
         var sdMap = new Ext.util.HashMap();
         // console.log('populateData of ' + this.id + ' is called with readData => ');        
-        this.arSeriesLegends.forEach(function (item, index, array) {
+        Ext.each(this.arSeriesLegends, function (item, index, array) {
             sdMap.add(item, { name: item, data: [] });
         });
         if (readData && Array.isArray(readData)) {
-            readData.forEach(function (xAxisCatObj, index, array) {
+            Ext.each(readData, function (xAxisCatObj, index, array) {
                 if (sourceLocation == DGPortal.Constants.All || xAxisCatObj.sourceLocation == sourceLocation) {
                     arXAxisCatgs.push(xAxisCatObj.source);
                     var seriesData = xAxisCatObj.seriesData;
@@ -572,7 +584,7 @@ Ext.define('DGPortal.view.ColumnBar', {
        	this.arSeriesLegends = [];
 
         //looping on data read from restApi
-        arData.forEach(function (element, index, array) {
+        Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
             //var objValue = element.value;           
             var source = objValue.source.toUpperCase();
@@ -589,7 +601,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 xAxisCatgsMap.add(source, xAxisData);
             }
             //adding unique policyName to legends array
-            if (!this.arSeriesLegends.includes(contentType)) {
+            if (this.arSeriesLegends.indexOf(contentType) == -1) {
                 this.arSeriesLegends.push(contentType);
             }
         }, this);
@@ -608,11 +620,11 @@ Ext.define('DGPortal.view.ColumnBar', {
         var arOnPremises = [];
 
         var sdMap = new Ext.util.HashMap();
-        this.arSeriesLegends.forEach(function (item, index, array) {
+        Ext.each(this.arSeriesLegends, function (item, index, array) {
             sdMap.add(item, { name: item, data: [] });
         });
 
-        readData.forEach(function (item, index, array) {
+        Ext.each(readData, function (item, index, array) {
             if (item.sourceLocation == DGPortal.Constants.OnPremise) {
                 arOnPremises.push(item);
             }
@@ -620,12 +632,12 @@ Ext.define('DGPortal.view.ColumnBar', {
                 arCloud.push(item);
             }
         });
-      
+
         //creating property to know how many CLOUD units are present for showing labels below x-axis.         
         this.cloudCount = arCloud.length;
 
         if (sourceLocation == DGPortal.Constants.All || sourceLocation == DGPortal.Constants.Cloud) {
-            arCloud.forEach(function (item, index, array) {
+            Ext.each(arCloud, function (item, index, array) {
                 arXAxisCatgs.push(item.source);
                 var seriesData = item.seriesData;
                 sdMap.each(function (key, value, length) {
@@ -641,7 +653,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
 
         if (sourceLocation == DGPortal.Constants.All || sourceLocation == DGPortal.Constants.OnPremise) {
-            arOnPremises.forEach(function (item, index, array) {
+            Ext.each(arOnPremises, function (item, index, array) {
                 arXAxisCatgs.push(item.source);
                 var seriesData = item.seriesData;
                 sdMap.each(function (key, value, length) {
@@ -746,7 +758,8 @@ function createGraph(obj) {
         width: 9999,
         height: 9999,
         allowWidthReduction: true,
-        preserveContent: false
+        preserveContent: false,
+        dragByHeading: false
     }, {
             chartOptions: obj.options
         });

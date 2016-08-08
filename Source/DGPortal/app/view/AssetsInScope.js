@@ -30,7 +30,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
                     allowDepress: false,
-                    pressed: true
+                    pressed: true,
+                    frame:false
                 },
                 {
                     xtype: 'button',
@@ -40,6 +41,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
                     allowDepress: false,
+                     frame:false
                 },
                 {
                     xtype: 'button',
@@ -49,6 +51,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
                     allowDepress: false,
+                    frame:false
                 }
             ]
         }, {
@@ -121,7 +124,15 @@ Ext.define('DGPortal.view.AssetsInScope', {
                         }
                     });
                     tempItems.push(actGauge_KM6);
-                    tempItems.forEach(function (item, index, array) {
+
+                    // jQuery.each(tempItems, function (index, item, array) {
+                    //     console.log(item);
+                    //     item.symbolPath = km_symbolData[index];
+                    //     item.columnWidth = 0.16;
+                    //     item.bindStore(store, true);
+                    // });
+
+                    Ext.each(tempItems, function (item, index, array) {                      
                         item.symbolPath = km_symbolData[index];
                         item.columnWidth = 0.16;
                         item.bindStore(store, true);
@@ -156,6 +167,6 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     }
                 }
             }
-        }       
-    ],    
+        }
+    ],
 });

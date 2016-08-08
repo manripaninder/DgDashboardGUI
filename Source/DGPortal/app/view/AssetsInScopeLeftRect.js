@@ -12,31 +12,37 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
     items: [
         {
             xtype: 'image',
+            id: 'leftRectOnPremiseImg',
             src: 'resources/images/premise.svg',
             style: {
-                fontSize: '40px',
-                color: '#0071cd',                
+                //fontSize: '40px',
+                color: '#0071cd',
                 fontFamily: 'montserratregular',
-                width: '16px'
+                width: '18px',
+                height: 'auto'
             },
+            height: 20
         },
         {
             xtype: 'image',
+            id: 'leftRectCloudImg',
             src: 'resources/images/cloud.svg',
             style:
             {
-                fontSize: '40px',
-                color: '#0071cd',               
+                //fontSize: '40px',
+                color: '#0071cd',
                 fontFamily: 'montserratregular',
-                width: '18px'
+                width: '18px',
             },
+            height: 20
         },
         {
             xtype: 'label',
-            id:'lblOnPremiseTotal',           
+            id: 'lblOnPremiseTotal',
+            //text:'23',          
             style: {
                 fontSize: '42px',
-                color: '#0071ce',             
+                color: '#0071ce',
                 //fontWeight: 'bold',
                 fontFamily: 'montserratregular',
             },
@@ -44,10 +50,11 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
         },
         {
             xtype: 'label',
-            id:'lblCloudTotal',           
+            id: 'lblCloudTotal',
+            //text:'23',             
             style: {
                 fontSize: '42px',
-                color: '#0071ce',                
+                color: '#0071ce',
                 //fontWeight: 'bold',
                 fontFamily: 'montserratregular'
             },
@@ -59,7 +66,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             style: {
                 fontSize: '10px',
                 fontWeight: 'bold',
-                color: '#0071ce',               
+                color: '#0071ce',
                 fontFamily: 'montserratregular',
                 textTransform: 'uppercase'
             },
@@ -71,7 +78,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             style: {
                 fontSize: '10px',
                 fontWeight: 'bold',
-                color: '#0071ce',                
+                color: '#0071ce',
                 fontFamily: 'montserratregular',
                 textTransform: 'uppercase'
             },
@@ -84,7 +91,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             style: {
                 fontSize: '10px',
                 fontWeight: 'bold',
-                color: '#555555',                
+                color: '#555555',
                 fontFamily: 'montserratregular',
             }
         }

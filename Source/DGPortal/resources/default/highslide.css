@@ -328,14 +328,14 @@ html>/**/body .highslide-gallery ul img {
 .highslide-footer {
 	height: 16px;
 }
-.highslide-footer .highslide-resize {
+/*.highslide-footer .highslide-resize {
 	display: block;
 	float: right;
 	margin-top: 5px;
 	height: 11px;
 	width: 11px;
 	background: url(graphics/resize.gif) no-repeat;
-}
+}*/
 .highslide-footer .highslide-resize span {
 	display: none;
 }
