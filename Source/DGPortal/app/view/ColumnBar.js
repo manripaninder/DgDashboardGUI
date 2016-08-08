@@ -192,25 +192,28 @@ Ext.define('DGPortal.view.ColumnBar', {
 
     // private
     onLoad: function (_this, records, successful, eOpts) {
-        this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071ce', '#44b649', '#f5852b'];
-        this.dataObj.xAxisCategories = ['RS-LAKE', 'STG-LAKE', 'TDS', 'DB2', 'DW1', 'APS-HIVE', 'SOC-S3', 'STM-SS3'];
-        this.dataObj.series = [
-            {
-                name: 'Exposed',
-                data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]
-            }, {
-                name: 'Masked',
-                data: [54009, 84621, 121004, 10152, 15540, 84562, 41236, 52148]
-            }, {
-                name: 'Monitored',
-                data: [45009, 75321, 32004, 10152, 15540, 46325, 68523, 36521]
-            }, {
-                name: 'Cleaned',
-                data: [86009, 95123, 54004, 10152, 15540, 26548, 131216, 85412]
-            }, {
-                name: 'Unscanned',
-                data: [92009, 35789, 65004, 41152, 15540, 68425, 62547, 32145]
-            }];
+        this.dataObj.colors = [];
+        this.dataObj.xAxisCategories = [];
+        this.dataObj.series = [];
+        // this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071ce', '#44b649', '#f5852b'];
+        // this.dataObj.xAxisCategories = ['RS-LAKE', 'STG-LAKE', 'TDS', 'DB2', 'DW1', 'APS-HIVE', 'SOC-S3', 'STM-SS3'];
+        // this.dataObj.series = [
+        //     {
+        //         name: 'Exposed',
+        //         data: [90009, 75250, 10004, 10152, 15540, 17140, 131216, 14555]
+        //     }, {
+        //         name: 'Masked',
+        //         data: [54009, 84621, 121004, 10152, 15540, 84562, 41236, 52148]
+        //     }, {
+        //         name: 'Monitored',
+        //         data: [45009, 75321, 32004, 10152, 15540, 46325, 68523, 36521]
+        //     }, {
+        //         name: 'Cleaned',
+        //         data: [86009, 95123, 54004, 10152, 15540, 26548, 131216, 85412]
+        //     }, {
+        //         name: 'Unscanned',
+        //         data: [92009, 35789, 65004, 41152, 15540, 68425, 62547, 32145]
+        //     }];
 
 
         this.getStoreData(records, successful);

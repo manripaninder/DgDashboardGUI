@@ -95,6 +95,11 @@ label .x-component .x-component-default{
     color: white;    
 }
 
+.x-nlg .x-btn-default-small{
+    background-repeat: no-repeat;
+    background-image: none;
+}
+
 /*.x-btn-over.btnAstsInScp {
     background: #4cc54c;
     border-color: #4cc54c;

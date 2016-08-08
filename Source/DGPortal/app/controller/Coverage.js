@@ -221,14 +221,16 @@ Ext.define('DGPortal.controller.Coverage', {
     showAISRectBoxAsPerSrcLoc: function (filterVal) {
         var aisRectBox = Ext.ComponentQuery.query('#aisRectBox')[0];
         if (filterVal == DGPortal.Constants.All) {
-            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = false;
+            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.parentElement.style.display = "table-cell";
+            // aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = false;
             aisRectBox.items.items.forEach(function (item, index, array) {
                 if (index == array.length - 1) { return }
                 item.getEl().dom.parentElement.style.display = "table-cell";
             });
         }
         else if (filterVal == DGPortal.Constants.OnPremise) {
-            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = true;
+            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.parentElement.style.display = "none";
+            //aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = true;           
             aisRectBox.items.items.forEach(function (item, index, array) {
                 if (index == array.length - 1) { return }
                 if (index % 2 != 0) {
@@ -239,7 +241,8 @@ Ext.define('DGPortal.controller.Coverage', {
             });
         }
         else if (filterVal == DGPortal.Constants.Cloud) {
-            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = true;
+            aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.parentElement.style.display = "none";
+            //aisRectBox.items.items[aisRectBox.items.items.length - 1].getEl().dom.hidden = true;           
             aisRectBox.items.items.forEach(function (item, index, array) {
                 if (index == array.length - 1) { return }
                 if (index % 2 == 0) {

@@ -261,7 +261,7 @@ Ext.define('DGPortal.view.Gauge', {
     populateData: function (readData, filterType) {
         this.dataObj.yVal = 0;
         this.dataObj.subtitle = "0";
-        this.dataObj.title = "No Data";
+        this.dataObj.title = "No data";
         if (readData && readData.length > 0) {
             switch (this.id) {
                 case "Gauge_KM2":
