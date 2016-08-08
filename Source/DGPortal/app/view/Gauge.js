@@ -246,41 +246,13 @@ Ext.define('DGPortal.view.Gauge', {
                     var objSource = JSON.parse(element.value);
                     this.readData.push(objSource);
                 }, this);
+
+                // arData.forEach(function (element, index, array) {
+                //     var objSource = JSON.parse(element.value);
+                //     this.readData.push(objSource);
+                // }, this);
+
                 this.populateData(this.readData, DGPortal.Constants.All);
-                // //console.log(arData);
-                // switch (this.id) {
-                //     case "Gauge_KM1":
-                //         this.dataObj.yVal = 100;
-                //         this.dataObj.subtitle = arData.length;
-                //         this.dataObj.title = (arData.length > 1) ? arData.length + ' SOURCES' : arData.length + ' SOURCE';
-                //         break;
-                //     case "Gauge_KM2":
-                //         this.dataObj.yVal = 100;
-                //         var totalFiles_Tables = 0;
-                //         arData.forEach(function (element, index, array) {
-                //             var objSource = JSON.parse(element.value);
-                //             this.readData.push(objSource);
-                //         }, this);
-                //         break;
-                //     case "Gauge_KM3":
-
-                //         break;
-                //     case "Gauge_KM4":
-                //         arData.forEach(function (element, index, array) {
-                //             var objSource = JSON.parse(element.value);
-                //             this.readData.push(objSource);
-                //         }, this);
-                //         break;
-                //     case "Gauge_KM5":
-                //         break;
-                //     case "Gauge_KM6":
-                //         arData.forEach(function (element, index, array) {
-                //             var objSource = JSON.parse(element.value);
-                //             this.readData.push(objSource);
-                //         }, this);
-
-                //         break;
-                // }
             }
 
         }
@@ -313,7 +285,7 @@ Ext.define('DGPortal.view.Gauge', {
                         }
                     }, this);
                     totalOperation = operationFiles + operationTables;
-                    var operationPercent = (totalOperation / totalFiles_Tables) * 100;                 
+                    var operationPercent = (totalOperation / totalFiles_Tables) * 100;
                     this.dataObj.yVal = operationPercent ? +operationPercent.toFixed(1) : 0; //parseFloat(operationPercent.toPrecision(3));
                     this.dataObj.subtitle = operationPercent ? Math.round(operationPercent) + '%' : '0%';
                     var fileText = DGPortal.Constants.getFileText(operationFiles);
@@ -333,7 +305,7 @@ Ext.define('DGPortal.view.Gauge', {
                     }, this);
                     totalProtected = protectedFiles + protectedTables;
                     var protectedPercent = (totalProtected / totalFiles_Tables) * 100;
-                    this.dataObj.yVal = +protectedPercent.toFixed(1); //parseFloat(protectedPercent.toPrecision(3));
+                    this.dataObj.yVal = protectedPercent ? +protectedPercent.toFixed(1) : 0; //parseFloat(protectedPercent.toPrecision(3));
                     this.dataObj.subtitle = protectedPercent ? Math.round(protectedPercent) + '%' : '0%';
                     var fileText = DGPortal.Constants.getFileText(protectedFiles);
                     var tableText = DGPortal.Constants.getTableText(protectedTables);
@@ -356,7 +328,7 @@ Ext.define('DGPortal.view.Gauge', {
 
                     var fileText = DGPortal.Constants.getFileText(totalMonitored);
 
-                    this.dataObj.yVal = +monitoredPercent.toFixed(1);
+                    this.dataObj.yVal = monitoredPercent ? +monitoredPercent.toFixed(1) : 0;
                     this.dataObj.subtitle = monitoredPercent ? Math.round(monitoredPercent) + '%' : '0%';
                     this.dataObj.title = 'ALERTED IN LAST 24HRS ' + totalMonitored + ' ' + fileText;
                     break;
@@ -375,7 +347,7 @@ Ext.define('DGPortal.view.Gauge', {
                     var fileText = DGPortal.Constants.getFileText(unscannedFiles);
                     var tableText = DGPortal.Constants.getTableText(unscannedTables);
 
-                    this.dataObj.yVal = +unscannedPercent.toFixed(1);
+                    this.dataObj.yVal = unscannedPercent ? +unscannedPercent.toFixed(1) : 0;
                     this.dataObj.subtitle = unscannedPercent ? Math.round(unscannedPercent) + '%' : '0%';
                     this.dataObj.title = 'UNSCANNED ' + unscannedFiles + ' ' + fileText + '/' +
                         unscannedTables + ' ' + tableText;

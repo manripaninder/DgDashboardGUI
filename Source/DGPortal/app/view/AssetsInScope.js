@@ -1,7 +1,7 @@
 //'resources/images/sources.svg',
 
-var km_symbolData = ['resources/images/files.svg', 'resources/images/detected-data.svg',
-    'resources/images/lock.svg', 'resources/images/info.svg', 'resources/images/unlock.svg']
+var km_symbolData = ['resources/images/files.png', 'resources/images/detected-data.png',
+    'resources/images/lock.png', 'resources/images/info.png', 'resources/images/unlock.png']
 
 Ext.define('DGPortal.view.AssetsInScope', {
     extend: 'Ext.panel.Panel',
@@ -31,7 +31,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     toggleGroup: 'sources',
                     allowDepress: false,
                     pressed: true,
-                    frame:false
+                    frame: false
                 },
                 {
                     xtype: 'button',
@@ -41,7 +41,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
                     allowDepress: false,
-                     frame:false
+                    frame: false
                 },
                 {
                     xtype: 'button',
@@ -51,7 +51,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     cls: 'btnAstsInScp',
                     toggleGroup: 'sources',
                     allowDepress: false,
-                    frame:false
+                    frame: false
                 }
             ]
         }, {
@@ -132,7 +132,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     //     item.bindStore(store, true);
                     // });
 
-                    Ext.each(tempItems, function (item, index, array) {                      
+                    Ext.each(tempItems, function (item, index, array) {
                         item.symbolPath = km_symbolData[index];
                         item.columnWidth = 0.16;
                         item.bindStore(store, true);

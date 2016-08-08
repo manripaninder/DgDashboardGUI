@@ -68,11 +68,11 @@ Ext.define('DGPortal.view.ColumnBar', {
 
         this.log(this.rendered);
 
- Highcharts.setOptions(
+        Highcharts.setOptions(
             {
                 lang:
                 {
-                    noData: "No Data To Display"
+                    noData: "No data to display"
                 }
             }
         );
@@ -408,7 +408,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.readData = [];
         Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
-            this.readData.push(objValue);           
+            this.readData.push(objValue);
         }, this);
         this.populateProtectedData(this.readData, DGPortal.Constants.All);
     },

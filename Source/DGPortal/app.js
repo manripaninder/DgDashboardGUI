@@ -68,6 +68,7 @@ Ext.application({
     autoCreateViewport: true
 });
 
+//adding indexOf method for ie 8 version
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (obj, start) {
         for (var i = (start || 0), j = this.length; i < j; i++) {
@@ -77,12 +78,14 @@ if (!Array.prototype.indexOf) {
     }
 }
 
+//adding indexOf method for ie 8 version
 if (!Array.prototype.isArray) {
     Array.isArray = function (obj) {
         return Object.prototype.toString.call(obj) === "[object Array]";
     };
 }
 
+//adding forEach method for ie 8 version
 if (!Array.prototype.forEach ) {
   Array.prototype.forEach = function(fn, scope) {
     for(var i = 0, len = this.length; i < len; ++i) {

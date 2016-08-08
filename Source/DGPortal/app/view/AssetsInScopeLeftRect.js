@@ -13,20 +13,19 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
         {
             xtype: 'image',
             id: 'leftRectOnPremiseImg',
-            src: 'resources/images/premise.svg',
+            src: 'resources/images/premise.png',
             style: {
                 //fontSize: '40px',
                 color: '#0071cd',
                 fontFamily: 'montserratregular',
                 width: '18px',
-                height: 'auto'
             },
             height: 20
         },
         {
             xtype: 'image',
             id: 'leftRectCloudImg',
-            src: 'resources/images/cloud.svg',
+            src: 'resources/images/cloud.png',
             style:
             {
                 //fontSize: '40px',
@@ -34,7 +33,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
                 fontFamily: 'montserratregular',
                 width: '18px',
             },
-            height: 20
+            height: 14
         },
         {
             xtype: 'label',
