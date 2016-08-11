@@ -150,10 +150,10 @@ Ext.define('DGPortal.view.Gauge', {
                 title: {
                     text: this.dataObj.title,
                     style: {
-                        fontSize: '11px',
+                        fontSize: '12px',
                         color: '#555555',
                         fontFamily: 'montserratregular',
-                        fontWeight: 'bold',
+                        fontWeight: 'normal',
                     },
                     verticalAlign: 'bottom',
                     y: -25,
@@ -164,8 +164,8 @@ Ext.define('DGPortal.view.Gauge', {
                     y: 70,
                     style: {
                         color: '#0071ce',
-                        fontWeight: 'bold',
-                        fontSize: '32px',
+                        fontWeight: 'normal',
+                        fontSize: '34px',
                         fontFamily: 'montserratregular'
                     }
                 },
@@ -207,7 +207,13 @@ Ext.define('DGPortal.view.Gauge', {
                             format: '{y} %'
                         },
                         linecap: 'square',
-                        stickyTracking: false
+                        stickyTracking: false,
+                        // events: {
+                        //     click: function (e) {
+                        //         alert("Chart clicked");
+                        //         console.log(this);
+                        //     }
+                        // }
                     }
                 },
                 series: [
@@ -272,6 +278,10 @@ Ext.define('DGPortal.view.Gauge', {
                         }
                     }, this);
                     this.dataObj.yVal = totalFiles_Tables > 0 ? 100 : 0;
+
+                    //converting long numbers to text with "B", "M" or "K"
+                    totalFiles_Tables = DGPortal.Constants.getNumberUnit(totalFiles_Tables);
+
                     this.dataObj.subtitle = totalFiles_Tables.toString();
                     this.dataObj.title = totalFiles_Tables + " FILES/TABLES";
                     break;
@@ -286,12 +296,18 @@ Ext.define('DGPortal.view.Gauge', {
                     }, this);
                     totalOperation = operationFiles + operationTables;
                     var operationPercent = (totalOperation / totalFiles_Tables) * 100;
+
                     this.dataObj.yVal = operationPercent ? +operationPercent.toFixed(1) : 0; //parseFloat(operationPercent.toPrecision(3));
                     this.dataObj.subtitle = operationPercent ? Math.round(operationPercent) + '%' : '0%';
+
                     var fileText = DGPortal.Constants.getFileText(operationFiles);
                     var tableText = DGPortal.Constants.getTableText(operationTables);
 
-                    this.dataObj.title = 'DETECTED ' + operationFiles + ' ' + fileText + '/' +
+                    //converting long numbers to text with "B", "M" or "K"
+                    operationFiles = DGPortal.Constants.getNumberUnit(operationFiles);
+                    operationTables = DGPortal.Constants.getNumberUnit(operationTables);
+
+                    this.dataObj.title = "DETECTED DATA " + operationFiles + ' ' + fileText + '/' +
                         operationTables + ' ' + tableText;
                     break;
                 case "Gauge_KM4":
@@ -304,33 +320,56 @@ Ext.define('DGPortal.view.Gauge', {
                         }
                     }, this);
                     totalProtected = protectedFiles + protectedTables;
+
                     var protectedPercent = (totalProtected / totalFiles_Tables) * 100;
+
                     this.dataObj.yVal = protectedPercent ? +protectedPercent.toFixed(1) : 0; //parseFloat(protectedPercent.toPrecision(3));
                     this.dataObj.subtitle = protectedPercent ? Math.round(protectedPercent) + '%' : '0%';
+
                     var fileText = DGPortal.Constants.getFileText(protectedFiles);
                     var tableText = DGPortal.Constants.getTableText(protectedTables);
+
+                    //converting long numbers to text with "B", "M" or "K"
+                    protectedFiles = DGPortal.Constants.getNumberUnit(protectedFiles);
+                    protectedTables = DGPortal.Constants.getNumberUnit(protectedTables);
 
                     this.dataObj.title = 'PROTECTED ' + protectedFiles + ' ' + fileText + '/' +
                         protectedTables + ' ' + tableText;
                     break;
                 case "Gauge_KM5":
-                    var totalFiles_Tables = 0, totalMonitored = 0;
+                    var totalFiles_Tables = 0, totalMonitored = 0, monitoredFiles = 0, monitoredTables = 0;
                     readData.forEach(function (item, index, array) {
                         if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
-                            totalMonitored += (item.monitoredFileCount + item.monitoredTableCount);
+                            monitoredFiles += item.monitoredFileCount;
+                            monitoredTables += item.monitoredTableCount;
+                            //totalMonitored += (item.monitoredFileCount + item.monitoredTableCount);
                         }
                     }, this);
 
-                    totalMonitored = DGPortal.Constants.getNumberUnit(totalMonitored);
+                    // totalMonitored = DGPortal.Constants.getNumberUnit(totalMonitored);
+                    // var monitoredPercent = (totalMonitored / totalFiles_Tables) * 100;
+                    // var fileText = DGPortal.Constants.getFileText(totalMonitored);
+                    // this.dataObj.yVal = monitoredPercent ? +monitoredPercent.toFixed(1) : 0;
+                    // this.dataObj.subtitle = monitoredPercent ? Math.round(monitoredPercent) + '%' : '0%';
+                    // this.dataObj.title = 'ALERTED IN LAST 24HRS ' + totalMonitored + ' ' + fileText;
 
-                    var monitoredPercent = (totalMonitored / totalFiles_Tables) * 100;
 
-                    var fileText = DGPortal.Constants.getFileText(totalMonitored);
+                    var fileText = DGPortal.Constants.getFileText(monitoredFiles);
+                    var tableText = DGPortal.Constants.getTableText(monitoredTables);
 
-                    this.dataObj.yVal = monitoredPercent ? +monitoredPercent.toFixed(1) : 0;
-                    this.dataObj.subtitle = monitoredPercent ? Math.round(monitoredPercent) + '%' : '0%';
-                    this.dataObj.title = 'ALERTED IN LAST 24HRS ' + totalMonitored + ' ' + fileText;
+                    var totalFiles_Tables = monitoredFiles + monitoredTables;
+
+                    //converting long numbers to text with "B", "M" or "K"
+                    totalFiles_Tables = DGPortal.Constants.getNumberUnit(totalFiles_Tables);
+                    monitoredFiles = DGPortal.Constants.getNumberUnit(monitoredFiles);
+                    monitoredTables = DGPortal.Constants.getNumberUnit(monitoredTables);
+
+                    this.dataObj.yVal = 100;
+                    this.dataObj.subtitle = totalFiles_Tables ? totalFiles_Tables : '0';
+                    this.dataObj.title = 'ALERTED IN LAST 24HRS ' + monitoredFiles + ' ' + fileText + '/'
+                        + monitoredTables + ' ' + tableText;
+
                     break;
                 case "Gauge_KM6":
                     var totalFiles_Tables = 0, totalUnscanned = 0, unscannedFiles = 0, unscannedTables = 0;
@@ -346,6 +385,9 @@ Ext.define('DGPortal.view.Gauge', {
 
                     var fileText = DGPortal.Constants.getFileText(unscannedFiles);
                     var tableText = DGPortal.Constants.getTableText(unscannedTables);
+
+                    unscannedFiles = DGPortal.Constants.getNumberUnit(unscannedFiles);
+                    unscannedTables = DGPortal.Constants.getNumberUnit(unscannedTables);
 
                     this.dataObj.yVal = unscannedPercent ? +unscannedPercent.toFixed(1) : 0;
                     this.dataObj.subtitle = unscannedPercent ? Math.round(unscannedPercent) + '%' : '0%';

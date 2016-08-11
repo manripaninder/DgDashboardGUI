@@ -1,4 +1,4 @@
-//'resources/images/sources.svg',
+//'resources/images/sources.svg', //detected-data.png
 
 var km_symbolData = ['resources/images/files.png', 'resources/images/detected-data.png',
     'resources/images/lock.png', 'resources/images/info.png', 'resources/images/unlock.png']
@@ -81,47 +81,47 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     // tempItems.push(actGauge_KM1);
                     var actGauge_KM2 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM2",
-                        dataObj: {
-                            yVal: 100,
-                            title: '5 MILLION FILES/TABLES',
-                            subtitle: '5M'
-                        }
+                        // dataObj: {
+                        //     yVal: 100,
+                        //     title: '5 MILLION FILES/TABLES',
+                        //     subtitle: '5M'
+                        // }
                     });
                     tempItems.push(actGauge_KM2);
                     var actGauge_KM3 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM3",
-                        dataObj: {
-                            yVal: 20,
-                            title: 'DETECTED DATA 1M FILES/3400 TABLES',
-                            subtitle: '20%'
-                        }
+                        // dataObj: {
+                        //     yVal: 20,
+                        //     title: 'DETECTED DATA 1M FILES/3400 TABLES',
+                        //     subtitle: '20%'
+                        // }
                     });
                     tempItems.push(actGauge_KM3);
                     var actGauge_KM4 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM4",
-                        dataObj: {
-                            yVal: 16,
-                            title: 'PROTECTED 800K FILES/1650 TABLES',
-                            subtitle: '16%'
-                        }
+                        // dataObj: {
+                        //     yVal: 16,
+                        //     title: 'PROTECTED 800K FILES/1650 TABLES',
+                        //     subtitle: '16%'
+                        // }
                     });
                     tempItems.push(actGauge_KM4);
                     var actGauge_KM5 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM5",
-                        dataObj: {
-                            yVal: 0.2,
-                            title: 'ALERTED IN LAST 24 HRS 10K FILES',
-                            subtitle: '0.2%'
-                        }
+                        // dataObj: {
+                        //     yVal: 0.2,
+                        //     title: 'ALERTED IN LAST 24 HRS 10K FILES',
+                        //     subtitle: '0.2%'
+                        // }
                     });
                     tempItems.push(actGauge_KM5);
                     var actGauge_KM6 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM6",
-                        dataObj: {
-                            yVal: 40,
-                            title: 'UNSCANNED 2M FILES/50K TABLES',
-                            subtitle: '40%'
-                        }
+                        // dataObj: {
+                        //     yVal: 40,
+                        //     title: 'UNSCANNED 2M FILES/50K TABLES',
+                        //     subtitle: '40%'
+                        // }
                     });
                     tempItems.push(actGauge_KM6);
 
@@ -132,11 +132,12 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     //     item.bindStore(store, true);
                     // });
 
+                    var gaugeColWidth = (1 - rectBox.columnWidth) / tempItems.length;
                     Ext.each(tempItems, function (item, index, array) {
                         item.symbolPath = km_symbolData[index];
-                        item.columnWidth = 0.16;
+                        item.columnWidth = gaugeColWidth;
                         item.bindStore(store, true);
-                    });
+                    }, this);
 
                     //this.items.add(actGauge_KM1);
                     this.items.add(actGauge_KM2);

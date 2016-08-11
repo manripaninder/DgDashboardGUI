@@ -4,7 +4,7 @@ Ext.define('DGPortal.Constants', {
     API_URL_OnPremise_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/On-Premise/operations',
     API_URL_Cloud_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/Cloud/operations',
     OnPremise: 'ON-PREMISE',
-    Cloud: 'ON-CLOUD',
+    Cloud: 'CLOUD',
     All: 'ALL',
     //API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources'
     getNumberUnit: function (numberVal) {
@@ -12,17 +12,18 @@ Ext.define('DGPortal.Constants', {
             // Nine Zeroes for Billions
             return Math.abs(Number(numberVal)) >= 1.0e+9
 
-                ? Math.abs(Number(numberVal)) / 1.0e+9 + "B"
+                ? Math.round(Math.abs(Number(numberVal)) / 1.0e+9) + "B"
                 // Six Zeroes for Millions 
                 : Math.abs(Number(numberVal)) >= 1.0e+6
 
-                    ? Math.abs(Number(numberVal)) / 1.0e+6 + "M"
+                    ? Math.round(Math.abs(Number(numberVal)) / 1.0e+6) + "M"
                     // Three Zeroes for Thousands
                     : Math.abs(Number(numberVal)) >= 1.0e+3
 
-                        ? Math.abs(Number(numberVal)) / 1.0e+3 + "K"
+                        ? Math.round(Math.abs(Number(numberVal)) / 1.0e+3) + "K"
 
                         : Math.abs(Number(numberVal));
+
         }
     },
     getFileText: function (numberVal) {

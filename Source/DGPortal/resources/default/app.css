@@ -82,13 +82,15 @@ label .x-component .x-component-default{
 
 .btnAstsInScp{
     background:#ffffff;
-    border: none;    
+    border: none;       
     /*color: black;*/
 }
 
 .btnAstsInScp .x-btn-inner {
     color: #555555;
-    font-weight: bold;
+    font-family: 'montserratregular'; 
+    font-weight: normal;
+    font-size:'12px';
 }
 
 .x-btn-pressed.btnAstsInScp .x-btn-inner {
@@ -99,13 +101,6 @@ label .x-component .x-component-default{
     background-repeat: no-repeat;
     background-image: none;
 }
-
-/*.x-btn-over.btnAstsInScp {
-    background: #4cc54c;
-    border-color: #4cc54c;
-    background-color: #4cc54c !important;
-    background-image: none;
-}*/
 
 .x-btn-pressed.btnAstsInScp {
     background: #0071ce;  

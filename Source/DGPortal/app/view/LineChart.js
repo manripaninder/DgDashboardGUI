@@ -68,6 +68,17 @@ Ext.define('DGPortal.view.LineChart', {
 
     drawChart: function () {
         this.log(this.rendered);
+
+        Highcharts.setOptions(
+            {
+                lang:
+                {
+                    noData: "No data to display",
+                    maximizeTooltip: 'Maximize'
+                }
+            }
+        );
+
         this.chart = new Highcharts.Chart(
             {
                 chart: {
@@ -105,6 +116,8 @@ Ext.define('DGPortal.view.LineChart', {
                 yAxis: {
                     gridLineDashStyle: 'solid',
                     offset: 10,
+                    min: 0,
+                    minRange: 1,
                     title: {
                         enabled: false,
                     },
@@ -125,8 +138,8 @@ Ext.define('DGPortal.view.LineChart', {
 
                     style: {
                         color: '#0071ce',
-                        fontSize: '13px',
-                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        fontWeight: 'normal',
                         fontFamily: 'montserratregular',
                         textTransform: 'uppercase'
                     }
@@ -141,6 +154,19 @@ Ext.define('DGPortal.view.LineChart', {
                             menuItems: null,
                             onclick: function () {
                                 createGraph(this);
+                            },
+                            _titleKey: 'maximizeTooltip', //for tooltip on button
+                            symbol: 'url(resources/images/max.png)',
+                            symbolX: 12,
+                            symbolY: 11,
+                            theme: {
+                                'stroke-width': 0,
+                                //r: 0,
+                                states: {
+                                    hover: {
+                                        fill: '#cccccc'
+                                    }
+                                }
                             }
                         }
                     }
@@ -174,42 +200,44 @@ Ext.define('DGPortal.view.LineChart', {
 
     // private
     onLoad: function (_this, records, succesfull, eOpts) {
-        this.dataObj.xAxisCategories = ['JAN', 'MAR', 'MAY', 'JUL', 'SEP', 'NOV'];
-        this.dataObj.series = [{
-            name: 'Exposed',
-            data: [50, 150, 200, 100, 60, 290],
-            marker: {
-                symbol: 'circle'
-            }
+        this.dataObj.xAxisCategories = [];
+        this.dataObj.series = [];
+        // this.dataObj.xAxisCategories = ['JAN', 'MAR', 'MAY', 'JUL', 'SEP', 'NOV'];
+        // this.dataObj.series = [{
+        //     name: 'Exposed',
+        //     data: [50, 150, 200, 100, 60, 290],
+        //     marker: {
+        //         symbol: 'circle'
+        //     }
 
-        }, {
-                name: 'Masked',
-                data: [100, 100, 50, 200, 300, 180],
-                marker: {
-                    symbol: 'circle'
-                }
+        // }, {
+        //         name: 'Masked',
+        //         data: [100, 100, 50, 200, 300, 180],
+        //         marker: {
+        //             symbol: 'circle'
+        //         }
 
-            }, {
-                name: 'Monitored',
-                data: [150, 50, 150, 220, 250, 320],
-                marker: {
-                    symbol: 'circle'
-                }
+        //     }, {
+        //         name: 'Monitored',
+        //         data: [150, 50, 150, 220, 250, 320],
+        //         marker: {
+        //             symbol: 'circle'
+        //         }
 
-            }, {
-                name: 'Cleaned',
-                data: [220, 200, 250, 280, 130, 80],
-                marker: {
-                    symbol: 'circle'
-                }
+        //     }, {
+        //         name: 'Cleaned',
+        //         data: [220, 200, 250, 280, 130, 80],
+        //         marker: {
+        //             symbol: 'circle'
+        //         }
 
-            }, {
-                name: 'Unscanned',
-                data: [250, 270, 300, 350, 390, 380],
-                marker: {
-                    symbol: 'circle'
-                }
-            }];
+        //     }, {
+        //         name: 'Unscanned',
+        //         data: [250, 270, 300, 350, 390, 380],
+        //         marker: {
+        //             symbol: 'circle'
+        //         }
+        //     }];
 
 
         this.log(this.store);
@@ -226,27 +254,21 @@ Ext.define('DGPortal.view.LineChart', {
             return;
         }
 
-        this.log("Call refresh from onLoad of " + this.id);
-        //this.refreshOnLoad && this.refresh();
-        this.refresh();
+        // this.log("Call refresh from onLoad of " + this.id);
+        // //this.refreshOnLoad && this.refresh();
+        // this.refresh();
     },
 
     onDataChange: function (_this, eOpts) {
         if (this.chart) {
-            //  this.populateData(this.readData, _this.dataType);
-            console.log(_this.dataType);
-            this.refresh();
+            this.populateData(this.readData, _this.dataType);
+            this.drawChart();
             //console.log(eOpts);
             // this.store.clearFilter(true);
             // console.log(this.id + "  after ClearFilter");
             // console.log(this.store);
         }
 
-    },
-
-    refresh: function () {
-        //apply logic for updating values from store
-        this.chart.redraw();
     },
 
     listeners: {
@@ -270,17 +292,40 @@ Ext.define('DGPortal.view.LineChart', {
     //method for fetching and saving data
     fetchData: function (arData) {
         //adding readData property to collect data when class is instantiated for Protected chart
-        this.readData = [];
+        var arReadData = [];
         arData.forEach(function (element, index, array) {
             var objValue = JSON.parse(element.value);
-            this.readData.push(objValue);
+            arReadData.push(objValue);
         }, this);
-        this.populateData(this.readData);
+
+        //sorting the months
+        var allMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+        arReadData.sort(function (a, b) {
+            var a_MonthVal = a.trendMonth.split('-')[0].toUpperCase();
+            var b_MonthVal = b.trendMonth.split('-')[0].toUpperCase();
+            var result = allMonths.indexOf(a_MonthVal) > allMonths.indexOf(b_MonthVal);
+            var i = result ? 1 : -1;
+            return i;
+        });
+
+        this.readData = new Ext.util.MixedCollection();
+        arReadData.forEach(function (element, index, array) {
+            var month = element.trendMonth.split('-')[0].toUpperCase();
+            //adding unique months to hashMap
+            if (this.readData.containsKey(month)) {
+                var arValues = this.readData.get(month);
+                arValues.push(element);
+            } else {
+                var arValues = [element];
+                this.readData.add(month, arValues);
+            }
+        }, this);
+        this.populateData(this.readData, DGPortal.Constants.All);
     },
 
     //method for populating data
-    populateData: function (readData) {
-        this.dataObj.colors = ['#f5852b', '#fdbf2d', '#0071ce'];
+    populateData: function (readData, sourceLocation) {
         var arXAxisCatgs = [];
         var exposed = { name: 'EXPOSED', data: [], marker: { symbol: 'circle' } };
         var masked = { name: 'MASKED/ENCRYPTED', data: [], marker: { symbol: 'circle' } };
@@ -288,16 +333,27 @@ Ext.define('DGPortal.view.LineChart', {
         var clean = { name: 'CLEAN', data: [], marker: { symbol: 'circle' } };
         var unscanned = { name: 'UNSCANNED', data: [], marker: { symbol: 'circle' } };
 
-        if (readData && Array.isArray(readData)) {
-            readData.forEach(function (element, index, array) {
-                var monthVal = element.trendMonth.split('-')[0];
-                arXAxisCatgs.push(monthVal.toUpperCase());
-                exposed.data.push(element.exposed);
-                masked.data.push(element.maskedEncryted);
-                monitored.data.push(element.monitored);
-                clean.data.push(element.clean);
-                unscanned.data.push(element.unscanned);
-            });
+        if (readData && readData.length > 0) {
+            readData.eachKey(function (monthKey, arValues, index, length) {
+                var exposedVal = 0, maskedEncrytedVal = 0, monitoredVal = 0, cleanVal = 0, unscannedVal = 0;
+                arXAxisCatgs.push(monthKey);
+                if (arValues && arValues.length > 0) {
+                    arValues.forEach(function (element, index, array) {
+                        if (sourceLocation == DGPortal.Constants.All || sourceLocation == element.sourceLocation.toUpperCase()) {
+                            exposedVal += element.exposed;
+                            maskedEncrytedVal += element.maskedEncryted;
+                            monitoredVal += element.monitored;
+                            cleanVal += element.clean;
+                            unscannedVal += element.unscanned;
+                        }
+                    }, this);
+                }
+                exposed.data.push(exposedVal);
+                masked.data.push(maskedEncrytedVal);
+                monitored.data.push(monitoredVal);
+                clean.data.push(cleanVal);
+                unscanned.data.push(unscannedVal);
+            }, this);
         }
 
         this.dataObj.xAxisCategories = arXAxisCatgs;

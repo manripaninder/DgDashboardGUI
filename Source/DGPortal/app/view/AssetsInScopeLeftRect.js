@@ -40,9 +40,9 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             id: 'lblOnPremiseTotal',
             //text:'23',          
             style: {
-                fontSize: '42px',
+                fontSize: '40px',
                 color: '#0071ce',
-                //fontWeight: 'bold',
+                fontWeight: 'normal',
                 fontFamily: 'montserratregular',
             },
 
@@ -52,9 +52,9 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             id: 'lblCloudTotal',
             //text:'23',             
             style: {
-                fontSize: '42px',
+                fontSize: '40px',
                 color: '#0071ce',
-                //fontWeight: 'bold',
+                fontWeight: 'normal',
                 fontFamily: 'montserratregular'
             },
 
@@ -63,8 +63,8 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             xtype: 'label',
             text: 'On Premise',
             style: {
-                fontSize: '10px',
-                fontWeight: 'bold',
+                fontSize: '11px',
+                fontWeight: 'normal',
                 color: '#0071ce',
                 fontFamily: 'montserratregular',
                 textTransform: 'uppercase'
@@ -75,8 +75,8 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             xtype: 'label',
             text: 'Cloud',
             style: {
-                fontSize: '10px',
-                fontWeight: 'bold',
+                fontSize: '11px',
+                fontWeight: 'normal',
                 color: '#0071ce',
                 fontFamily: 'montserratregular',
                 textTransform: 'uppercase'
@@ -88,8 +88,8 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
             colspan: 2,
             margin: '10,0,0,0',
             style: {
-                fontSize: '10px',
-                fontWeight: 'bold',
+                fontSize: '11px',
+                fontWeight: 'normal',
                 color: '#555555',
                 fontFamily: 'montserratregular',
             }

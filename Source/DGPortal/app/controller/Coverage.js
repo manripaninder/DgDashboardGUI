@@ -88,6 +88,7 @@ Ext.define('DGPortal.controller.Coverage', {
 
             var coverageTrendStore = Ext.create(DGPortal.store.Sources);
             coverageTrendStore.getProxy().extraParams = { toDate: covTrendToDate, fromDate: covTrendFromDate };
+            this.arStores.push(coverageTrendStore);
 
             var lineChart_OC = Ext.create('DGPortal.view.LineChart', { id: 'covTrend', chartTitle: 'COVERAGE TREND' });
             lineChart_OC.columnWidth = 0.34;
@@ -269,6 +270,10 @@ Ext.define('DGPortal.controller.Coverage', {
                     cloudCount += objSource.totalFileCount + objSource.totalTableCount;
                 }
             });
+
+            onPremiseCount = DGPortal.Constants.getNumberUnit(onPremiseCount);
+            cloudCount = DGPortal.Constants.getNumberUnit(cloudCount);
+
             var lblOnPremiseTotal = Ext.ComponentQuery.query('#lblOnPremiseTotal')[0];
             lblOnPremiseTotal.setText(onPremiseCount);
             var lblCloudTotal = Ext.ComponentQuery.query('#lblCloudTotal')[0];
