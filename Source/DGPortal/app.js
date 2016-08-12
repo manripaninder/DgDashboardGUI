@@ -47,7 +47,7 @@ Ext.application({
     name: 'DGPortal',
 
     requires: ['DGPortal.Constants', 'Ext.data.Store', 'Ext.layout.container.Table', 'Ext.form.field.ComboBox', 'Ext.form.Label',
-        'Ext.data.proxy.Rest', 'Ext.layout.container.Column'
+        'Ext.data.proxy.Rest', 'Ext.layout.container.Column', 'Ext.grid.Panel','Ext.window.Window'
     ],
 
     views: [
@@ -86,10 +86,10 @@ if (!Array.prototype.isArray) {
 }
 
 //adding forEach method for ie 8 version
-if (!Array.prototype.forEach ) {
-  Array.prototype.forEach = function(fn, scope) {
-    for(var i = 0, len = this.length; i < len; ++i) {
-      fn.call(scope, this[i], i, this);
-    }
-  };
+if (!Array.prototype.forEach) {
+    Array.prototype.forEach = function (fn, scope) {
+        for (var i = 0, len = this.length; i < len; ++i) {
+            fn.call(scope, this[i], i, this);
+        }
+    };
 }
