@@ -6,6 +6,7 @@ Ext.define('DGPortal.view.LineChart', {
     dataObj: {},
     //padding: '0,5,0,5',
     chartTitle: null,
+    mainSectionName: null,
     /***
     * @property {Boolean} debug
     * Switch on the debug logging to the console
@@ -67,6 +68,9 @@ Ext.define('DGPortal.view.LineChart', {
     },
 
     drawChart: function () {
+        //hide mask  
+        this.removeCls('customLoadMask');
+
         this.log(this.rendered);
 
         Highcharts.setOptions(
@@ -97,7 +101,7 @@ Ext.define('DGPortal.view.LineChart', {
                     // marginLeft:35
 
                 },
-                colors: ['#e61d27', '#fdbf2d', '#0071cd', '#44b649', '#f6852a'],
+                colors: this.dataObj.colors,
                 xAxis: {
                     categories: this.dataObj.xAxisCategories,
                     tickWidth: 0,
@@ -199,7 +203,7 @@ Ext.define('DGPortal.view.LineChart', {
                                     var categoryName = this.category;
                                     var compId = this.series.chart.renderTo.id;
                                     var compObj = Ext.ComponentQuery.query('#' + compId)[0];
-                                    compObj.showDrillDown(categoryName);
+                                    compObj.showDrillDown(compObj.mainSectionName, compObj.chartTitle, categoryName);
                                 }
                             }
                         }
@@ -208,12 +212,22 @@ Ext.define('DGPortal.view.LineChart', {
                 series: this.dataObj.series
             }
         );
+
     },
 
     // private
-    onLoad: function (_this, records, succesfull, eOpts) {
+    onLoad: function (_this, records, successful, eOpts) {
+        this.dataObj.colors = [];
         this.dataObj.xAxisCategories = [];
         this.dataObj.series = [];
+
+        //if no records are present then return with creating empty chart.  
+        if (!successful || records[0].data.sourceList.length < 1) {
+            this.drawChart();
+            return;
+        }
+
+
         // this.dataObj.xAxisCategories = ['JAN', 'MAR', 'MAY', 'JUL', 'SEP', 'NOV'];
         // this.dataObj.series = [{
         //     name: 'Exposed',
@@ -273,6 +287,14 @@ Ext.define('DGPortal.view.LineChart', {
 
     onDataChange: function (_this, eOpts) {
         if (this.chart) {
+
+            //when no data is present draw chart with empty colors so that legends doesn't appear and return.
+            if (this.readData === undefined || this.readData.length < 1) {
+                this.dataObj.colors = [];
+                this.drawChart();
+                return;
+            }
+
             this.populateData(this.readData, _this.dataType);
             this.drawChart();
             //console.log(eOpts);
@@ -288,6 +310,10 @@ Ext.define('DGPortal.view.LineChart', {
             if (this.rendered && this.chart) {
                 this.chart.reflow();
             }
+        },
+        render: function () {
+            //show loading gif with css style         
+            this.addCls('customLoadMask');
         }
     },
 
@@ -368,12 +394,13 @@ Ext.define('DGPortal.view.LineChart', {
             }, this);
         }
 
+        this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071cd', '#44b649', '#f6852a']
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = [exposed, masked, monitored, clean, unscanned];
 
     },
 
-      showDrillDown: function (categoryName) {
+    showDrillDown: function (mainSectionName, chartFor, categoryName) {
         var columnStore = Ext.create('Ext.data.Store', {
             storeId: 'ColumnStore',
             autoLoad: false,
@@ -444,29 +471,73 @@ Ext.define('DGPortal.view.LineChart', {
                 }]
         });
 
-        var window = Ext.create('Ext.window.Window', {
-            layout: 'fit',
-            title: 'DG Dashboard - ' + categoryName,
-            width: 615,
-            items: [{
-                xtype: 'gridpanel',
-                defaultAlign: 'c?',
-                store: columnStore,
-                modal: true,
-                columns: [
-                    { text: 'NAME', dataIndex: 'name' },
-                    { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-                    { text: 'MASKED', dataIndex: 'MASKED' },
-                    { text: 'MONITORED', dataIndex: 'MONITORED' },
-                    { text: 'CLEANED', dataIndex: 'CLEANED' },
-                    { text: 'UNSCANNED', dataIndex: 'UNSCANNED' },
-                ]
-            }]
-        });
+        var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
+        var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
 
-        window.show(null, function () {
-            var x = ((Ext.getBody().dom.clientWidth - this.getWidth()) / 2);          
-            this.setPosition(x);
+        var window = Ext.create('Ext.window.Window', {
+            // layout: {
+            //     type: 'vbox',
+            //     align: 'stretch'
+            // },
+            title: mainSectionName,
+            bodyStyle: {
+                background: '#ffffff',
+            },
+            maxHeight: windowHeight,
+            maxWidth: windowWidth,
+            minHeight: 100,
+            minWidth: 200,
+            autoScroll: true,
+            resizable: false,
+            plain: true,
+            modal: true,
+            bodyPadding: '0 10 0 10',
+            items: [
+                {
+                    xtype: 'panel',
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    margin: '0 10 10 10',
+                    items: [
+                        {
+                            xtype: 'label',
+                            text: chartFor,
+                            cls: 'drillDownHeader'
+                        },
+                        {
+                            xtype: 'label',
+                            text: categoryName,
+                            cls: 'drillDownLabel'
+                        },
+                        {
+                            xtype: 'gridpanel',
+                            defaultAlign: 'c?',
+                            store: columnStore,
+                            margin: '0 0 10 0',
+                            columns: [
+                                { text: 'NAME', dataIndex: 'name' },
+                                { text: 'EXPOSED', dataIndex: 'EXPOSED' },
+                                { text: 'MASKED', dataIndex: 'MASKED' },
+                                { text: 'MONITORED', dataIndex: 'MONITORED' },
+                                { text: 'CLEANED', dataIndex: 'CLEANED' },
+                                { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
+                            ]
+                        }
+                    ],
+                }
+            ],
+            listeners: {
+                afterlayout: function (_this, layout, eOpts) {
+                    //if (_this.layout.firedTriggers == layout.layoutCount) {
+                    var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
+                    var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
+                    _this.setPosition(x, y);
+                    //}
+                }
+            }
         });
+        window.show(null);
     }
 });

@@ -18,6 +18,9 @@ Ext.define('DGPortal.view.Gauge', {
             Highcharts.setOptions({
                 colors: ['#0071cd ', '#CBBB9B ', '#efefef '],
             });
+
+            //show loading gif with css style         
+            this.addCls('customLoadMask');
         },
         // boxready: function () {
         //     // var height = this.symbolPath.includes('lock') ? 16 : 13;
@@ -93,7 +96,17 @@ Ext.define('DGPortal.view.Gauge', {
         }
     },
     // private
-    onLoad: function (_this, records, succesfull, eOpts) {
+    onLoad: function (_this, records, successful, eOpts) {
+        this.dataObj.yVal = 0;
+        this.dataObj.subtitle = "0";
+        this.dataObj.title = "No data";
+
+        //if no records are present then return with creating empty chart.  
+        if (!successful || records[0].data.sourceList.length < 1) {
+            this.drawChart();
+            return;
+        }
+
         this.getStoreData(records);
         this.log('OnLoad of ' + this.id + " is called.");
         if (!this.chart) {
@@ -125,14 +138,17 @@ Ext.define('DGPortal.view.Gauge', {
             this.refresh();
             //console.log(_this.dataType);
             //console.log(eOpts);
-            // this.store.clearFilter(true);
-            // console.log(this.id + "  after ClearFilter");
-            // console.log(this.store);
+            //this.store.clearFilter(true);
+            //console.log(this.id + "  after ClearFilter");
+            //console.log(this.store);
         }
 
     },
 
     drawChart: function () {
+        //hide mask
+        this.removeCls('customLoadMask');
+
         this.log(this.rendered);
         this.chart = new Highcharts.Chart(
             {
@@ -147,9 +163,10 @@ Ext.define('DGPortal.view.Gauge', {
                         click: function (e) {
                             var gaugeId = this.renderTo.id;
                             var gaugeObj = Ext.ComponentQuery.query('#' + gaugeId)[0];
-                            gaugeObj.showDrillDown(gaugeId);
+                            gaugeObj.showDrillDown("ASSETS IN SCOPE", gaugeObj.kmType);
                         }
-                    }
+                    },
+                    className: 'pointChart',
                 },
                 exporting: {
                     enabled: false
@@ -226,7 +243,7 @@ Ext.define('DGPortal.view.Gauge', {
                             radius: '100%',
                             innerRadius: '100%',
                             y: this.dataObj.yVal
-                        }]
+                        }],
                     }]
 
             }
@@ -266,9 +283,6 @@ Ext.define('DGPortal.view.Gauge', {
     },
 
     populateData: function (readData, filterType) {
-        this.dataObj.yVal = 0;
-        this.dataObj.subtitle = "0";
-        this.dataObj.title = "No data";
         if (readData && readData.length > 0) {
             switch (this.id) {
                 case "Gauge_KM2":
@@ -399,19 +413,30 @@ Ext.define('DGPortal.view.Gauge', {
         }
     },
 
-    showDrillDown: function (categoryName) {
+    showDrillDown: function (mainSectionName, chartFor, categoryName) {
+        // Ext.define('ColumnModel', {
+        //     extend: 'Ext.data.Model',
+        //     fields: [
+        //         'name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'
+        //     ],
+        // });
+
         var columnStore = Ext.create('Ext.data.Store', {
             storeId: 'ColumnStore',
             autoLoad: false,
-            fields: ['name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'],
-            data: [{
-                'name': 'RS-LAKE',
-                'EXPOSED': 1,
-                'MASKED': 2,
-                'MONITORED': 3,
-                'CLEANED': 4,
-                'UNSCANNED': 5
-            },
+            //model: 'ColumnModel',
+            fields: [
+                'name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'
+            ],
+            data: [
+                {
+                    'name': 'RS-LAKE',
+                    'EXPOSED': 1,
+                    'MASKED': 2,
+                    'MONITORED': 3,
+                    'CLEANED': 4,
+                    'UNSCANNED': 5
+                },
                 {
                     'name': 'STG',
                     'EXPOSED': 6,
@@ -419,7 +444,8 @@ Ext.define('DGPortal.view.Gauge', {
                     'MONITORED': 2,
                     'CLEANED': 8,
                     'UNSCANNED': 1
-                }, {
+                },
+                {
                     'name': 'TDS',
                     'EXPOSED': 9,
                     'MASKED': 4,
@@ -427,7 +453,8 @@ Ext.define('DGPortal.view.Gauge', {
                     'CLEANED': 12,
                     'UNSCANNED': 32
 
-                }, {
+                },
+                {
                     'name': 'DB2',
                     'EXPOSED': 9,
                     'MASKED': 5,
@@ -435,7 +462,8 @@ Ext.define('DGPortal.view.Gauge', {
                     'CLEANED': 12,
                     'UNSCANNED': 32
 
-                }, {
+                },
+                {
                     'name': 'DW1',
                     'EXPOSED': 11,
                     'MASKED': 8,
@@ -452,7 +480,8 @@ Ext.define('DGPortal.view.Gauge', {
                     'CLEANED': 13,
                     'UNSCANNED': 12
 
-                }, {
+                },
+                {
                     'name': 'SOC-S3',
                     'EXPOSED': 11,
                     'MASKED': 8,
@@ -460,40 +489,111 @@ Ext.define('DGPortal.view.Gauge', {
                     'CLEANED': 13,
                     'UNSCANNED': 12
 
-                }, {
+                },
+                {
                     'name': 'STM-SS3',
                     'EXPOSED': 11,
                     'MASKED': 8,
                     'MONITORED': 7,
                     'CLEANED': 13,
                     'UNSCANNED': 12
-                }]
+                }
+            ]
+            //pageSize: 4,           
         });
 
+        var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
+        var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
+
         var window = Ext.create('Ext.window.Window', {
-            layout: 'fit',
-            title: 'DG Dashboard - ' + categoryName,
-            width: 615,
-            items: [{
-                xtype: 'gridpanel',
-                defaultAlign: 'c?',
+            // layout: {
+            //     type: 'vbox',
+            //     align: 'stretch'
+            // },            
+            title: mainSectionName,
+            bodyStyle: {
+                background: '#ffffff',
+            },
+            maxHeight: windowHeight,
+            maxWidth: windowWidth,
+            minHeight: 100,
+            minWidth: 200,
+            autoScroll: true,
+            resizable: false,
+            plain: true,
+            modal: true,
+            bodyPadding: '0 10 0 10',
+            items: [
+                {
+                    xtype: 'panel',
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    margin: '0 10 10 10',
+                    items: [
+                        {
+                            xtype: 'label',
+                            text: chartFor,
+                            cls: 'drillDownHeader',
+                        },
+                        {
+                            xtype: 'gridpanel',
+                            defaultAlign: 'c?',
+                            store: columnStore,
+                            margin: '0 0 10 0',
+                            autoScroll: false,
+                            columns: [
+                                { text: 'NAME', dataIndex: 'name' },
+                                { text: 'EXPOSED', dataIndex: 'EXPOSED' },
+                                { text: 'MASKED', dataIndex: 'MASKED' },
+                                { text: 'MONITORED', dataIndex: 'MONITORED' },
+                                { text: 'CLEANED', dataIndex: 'CLEANED' },
+                                { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
+                            ]
+                            // bbar: {
+                            //     xtype: 'pagingtoolbar',
+                            //     store: columnStore,
+                            //     displayInfo: true,
+                            //     displayMsg: 'Displaying {0} to {1} of {2} &nbsp;records ',
+                            //     emptyMsg: "No records to display&nbsp;"
+                            // }
+                        }
+                    ],
+                }
+            ],
+            listeners: {
+                afterlayout: function (_this, layout, eOpts) {
+                    //if (_this.layout.firedTriggers == layout.layoutCount) {                       
+                    var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
+                    var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
+                    _this.setPosition(x, y);
+                    //}
+                }
+            }
+        });
+
+        if (selectedFilter == DGPortal.Constants.All) {
+            var secondGrid = Ext.create('Ext.grid.Panel', {
                 store: columnStore,
-                modal: true,
+                margin: '0 0 10 0',
                 columns: [
                     { text: 'NAME', dataIndex: 'name' },
                     { text: 'EXPOSED', dataIndex: 'EXPOSED' },
                     { text: 'MASKED', dataIndex: 'MASKED' },
                     { text: 'MONITORED', dataIndex: 'MONITORED' },
                     { text: 'CLEANED', dataIndex: 'CLEANED' },
-                    { text: 'UNSCANNED', dataIndex: 'UNSCANNED' },
-                ]
-            }]
-        });
+                    { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
+                ],
+            });
+            window.items.items[0].add(secondGrid);
+            //window.items.add(secondGrid);
+        }
 
-        window.show(null, function () {
-            var x = ((Ext.getBody().dom.clientWidth - this.getWidth()) / 2);          
-            this.setPosition(x);
-        });
+        window.show();
+        // var x = ((Ext.getBody().dom.clientWidth - window.getWidth()) / 2);
+        // var y = ((Ext.getBody().dom.clientHeight - window.getHeight()) / 2);
+        // window.setPosition(x, y);
     }
 
 });

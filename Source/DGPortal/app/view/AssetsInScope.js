@@ -81,6 +81,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     // tempItems.push(actGauge_KM1);
                     var actGauge_KM2 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM2",
+                        kmType: 'TOTAL FILES',
+                        margin: '0 2 0 2'
                         // dataObj: {
                         //     yVal: 100,
                         //     title: '5 MILLION FILES/TABLES',
@@ -90,6 +92,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     tempItems.push(actGauge_KM2);
                     var actGauge_KM3 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM3",
+                        kmType: 'DETECTED DATA',
+                        margin: '0 2 0 0'
                         // dataObj: {
                         //     yVal: 20,
                         //     title: 'DETECTED DATA 1M FILES/3400 TABLES',
@@ -99,6 +103,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     tempItems.push(actGauge_KM3);
                     var actGauge_KM4 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM4",
+                        kmType: 'PROTECTED',
+                        margin: '0 2 0 0'
                         // dataObj: {
                         //     yVal: 16,
                         //     title: 'PROTECTED 800K FILES/1650 TABLES',
@@ -108,6 +114,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     tempItems.push(actGauge_KM4);
                     var actGauge_KM5 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM5",
+                        kmType: 'ALERTED',
+                        margin: '0 2 0 0'
                         // dataObj: {
                         //     yVal: 0.2,
                         //     title: 'ALERTED IN LAST 24 HRS 10K FILES',
@@ -117,6 +125,8 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     tempItems.push(actGauge_KM5);
                     var actGauge_KM6 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM6",
+                        kmType: 'UNSCANNED',
+                        margin: '0 2 0 0'
                         // dataObj: {
                         //     yVal: 40,
                         //     title: 'UNSCANNED 2M FILES/50K TABLES',

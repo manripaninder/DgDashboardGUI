@@ -12,6 +12,7 @@ Ext.define('DGPortal.controller.Coverage', {
             '#btnAll': {
                 toggle: function (_this, pressed, eOpts) {
                     if (pressed) {
+                        selectedFilter = DGPortal.Constants.All;
                         var filterVal = DGPortal.Constants.All;
                         this.showAISRectBoxAsPerSrcLoc(filterVal);
                         this.arStores.forEach(function (storeItem) {
@@ -23,6 +24,7 @@ Ext.define('DGPortal.controller.Coverage', {
             '#btnOnPremise': {
                 toggle: function (_this, pressed, eOpts) {
                     if (pressed) {
+                        selectedFilter = DGPortal.Constants.OnPremise;
                         var filterVal = DGPortal.Constants.OnPremise;
                         this.showAISRectBoxAsPerSrcLoc(filterVal);
                         this.arStores.forEach(function (storeItem) {
@@ -44,6 +46,7 @@ Ext.define('DGPortal.controller.Coverage', {
             '#btnCloud': {
                 toggle: function (_this, pressed, eOpts) {
                     if (pressed) {
+                        selectedFilter = DGPortal.Constants.Cloud;
                         var filterVal = DGPortal.Constants.Cloud;
                         this.showAISRectBoxAsPerSrcLoc(filterVal);
                         this.arStores.forEach(function (storeItem) {
@@ -55,6 +58,8 @@ Ext.define('DGPortal.controller.Coverage', {
         });
     },
     onLaunch: function () {
+        //creating global variable for storing the current filter value.
+        selectedFilter = DGPortal.Constants.All;
 
         //collecting all the stores in an array
         this.arStores = [];
@@ -76,7 +81,9 @@ Ext.define('DGPortal.controller.Coverage', {
                 layout: 'column',
             });
 
-            var columnBar_OC1 = Ext.create('DGPortal.view.ColumnBar', { id: 'cas', chartTitle: 'COVERAGE ACROSS SOURCES' });
+            var columnBar_OC1 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'cas', chartTitle: 'COVERAGE ACROSS SOURCES', mainSectionName: 'OVERALL COVERAGE'
+            });
             columnBar_OC1.columnWidth = 0.33;
             columnBar_OC1.bindStore(sourcesStore, true);
 
@@ -90,14 +97,18 @@ Ext.define('DGPortal.controller.Coverage', {
             coverageTrendStore.getProxy().extraParams = { toDate: covTrendToDate, fromDate: covTrendFromDate };
             this.arStores.push(coverageTrendStore);
 
-            var lineChart_OC = Ext.create('DGPortal.view.LineChart', { id: 'covTrend', chartTitle: 'COVERAGE TREND' });
+            var lineChart_OC = Ext.create('DGPortal.view.LineChart', {
+                id: 'covTrend', chartTitle: 'COVERAGE TREND', mainSectionName: 'OVERALL COVERAGE'
+            });
             lineChart_OC.columnWidth = 0.34;
             lineChart_OC.bindStore(coverageTrendStore, true);
 
             var contentStore = Ext.create('DGPortal.store.Content');
             this.arStores.push(contentStore);
 
-            var columnBar_OC2 = Ext.create('DGPortal.view.ColumnBar', { id: 'content', chartTitle: 'CONTENT', margin: '0 10 0 10' });
+            var columnBar_OC2 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'content', chartTitle: 'CONTENT', margin: '0 10 0 10', mainSectionName: 'OVERALL COVERAGE'
+            });
             columnBar_OC2.bindStore(contentStore, true);
             columnBar_OC2.columnWidth = 0.33;
 
@@ -174,28 +185,36 @@ Ext.define('DGPortal.controller.Coverage', {
             var protectedStore = Ext.create('DGPortal.store.Protected');
             this.arStores.push(protectedStore);
 
-            var columnBar_EP1 = Ext.create('DGPortal.view.ColumnBar', { id: 'protected', chartTitle: 'Protected' });
+            var columnBar_EP1 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'protected', chartTitle: 'Protected', mainSectionName: 'EXPOSURE AND PROTECTION'
+            });
             columnBar_EP1.columnWidth = 0.25;
             columnBar_EP1.bindStore(protectedStore, true);
 
             var exposedStore = Ext.create('DGPortal.store.Exposed');
             this.arStores.push(exposedStore);
 
-            var columnBar_EP2 = Ext.create('DGPortal.view.ColumnBar', { id: 'exposed', chartTitle: 'Exposed' });
+            var columnBar_EP2 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'exposed', chartTitle: 'Exposed', mainSectionName: 'EXPOSURE AND PROTECTION'
+            });
             columnBar_EP2.columnWidth = 0.25;
             columnBar_EP2.bindStore(exposedStore, true);
 
             var unscannedStore = Ext.create('DGPortal.store.Unscanned');
             this.arStores.push(unscannedStore);
 
-            var columnBar_EP3 = Ext.create('DGPortal.view.ColumnBar', { id: 'unscanned', chartTitle: 'Unscanned' });
+            var columnBar_EP3 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'unscanned', chartTitle: 'Unscanned', mainSectionName: 'EXPOSURE AND PROTECTION'
+            });
             columnBar_EP3.columnWidth = 0.25;
             columnBar_EP3.bindStore(unscannedStore, true);
 
             var monitoredStore = Ext.create('DGPortal.store.Monitored');
             this.arStores.push(monitoredStore);
 
-            var columnBar_EP4 = Ext.create('DGPortal.view.ColumnBar', { id: 'monitored', chartTitle: 'Monitored', margin: '0 10 10 10', });
+            var columnBar_EP4 = Ext.create('DGPortal.view.ColumnBar', {
+                id: 'monitored', chartTitle: 'Monitored', margin: '0 10 10 10', mainSectionName: 'EXPOSURE AND PROTECTION'
+            });
             columnBar_EP4.columnWidth = 0.25;
             columnBar_EP4.bindStore(monitoredStore, true);
 

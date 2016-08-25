@@ -47,7 +47,7 @@ Ext.application({
     name: 'DGPortal',
 
     requires: ['DGPortal.Constants', 'Ext.data.Store', 'Ext.layout.container.Table', 'Ext.form.field.ComboBox', 'Ext.form.Label',
-        'Ext.data.proxy.Rest', 'Ext.layout.container.Column', 'Ext.grid.Panel','Ext.window.Window'
+        'Ext.data.proxy.Rest', 'Ext.layout.container.Column', 'Ext.grid.Panel', 'Ext.window.Window'
     ],
 
     views: [
