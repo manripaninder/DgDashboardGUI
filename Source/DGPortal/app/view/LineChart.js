@@ -349,7 +349,9 @@ Ext.define('DGPortal.view.LineChart', {
 
         this.readData = new Ext.util.MixedCollection();
         arReadData.forEach(function (element, index, array) {
-            var month = element.trendMonth.split('-')[0].toUpperCase();
+            //var month = element.trendMonth.split('-')[0].toUpperCase();
+            var month = element.trendMonth.toUpperCase();
+
             //adding unique months to hashMap
             if (this.readData.containsKey(month)) {
                 var arValues = this.readData.get(month);
@@ -373,11 +375,14 @@ Ext.define('DGPortal.view.LineChart', {
 
         if (readData && readData.length > 0) {
             readData.eachKey(function (monthKey, arValues, index, length) {
+                var eligibleElement = false;
                 var exposedVal = 0, maskedEncrytedVal = 0, monitoredVal = 0, cleanVal = 0, unscannedVal = 0;
-                arXAxisCatgs.push(monthKey);
+
                 if (arValues && arValues.length > 0) {
                     arValues.forEach(function (element, index, array) {
                         if (sourceLocation == DGPortal.Constants.All || sourceLocation == element.sourceLocation.toUpperCase()) {
+                            //if sourceLocation criteria qualifies then setting eligibleElement equals to true.
+                            eligibleElement = true;
                             exposedVal += element.exposed;
                             maskedEncrytedVal += element.maskedEncryted;
                             monitoredVal += element.monitored;
@@ -386,11 +391,16 @@ Ext.define('DGPortal.view.LineChart', {
                         }
                     }, this);
                 }
-                exposed.data.push(exposedVal);
-                masked.data.push(maskedEncrytedVal);
-                monitored.data.push(monitoredVal);
-                clean.data.push(cleanVal);
-                unscanned.data.push(unscannedVal);
+
+                //adding data only when eligibleElement is true.
+                if (eligibleElement) {
+                    arXAxisCatgs.push(monthKey);
+                    exposed.data.push(exposedVal);
+                    masked.data.push(maskedEncrytedVal);
+                    monitored.data.push(monitoredVal);
+                    clean.data.push(cleanVal);
+                    unscanned.data.push(unscannedVal);
+                }
             }, this);
         }
 
@@ -401,143 +411,14 @@ Ext.define('DGPortal.view.LineChart', {
     },
 
     showDrillDown: function (mainSectionName, chartFor, categoryName) {
-        var columnStore = Ext.create('Ext.data.Store', {
-            storeId: 'ColumnStore',
-            autoLoad: false,
-            fields: ['name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'],
-            data: [{
-                'name': 'RS-LAKE',
-                'EXPOSED': 1,
-                'MASKED': 2,
-                'MONITORED': 3,
-                'CLEANED': 4,
-                'UNSCANNED': 5
-            },
-                {
-                    'name': 'STG',
-                    'EXPOSED': 6,
-                    'MASKED': 4,
-                    'MONITORED': 2,
-                    'CLEANED': 8,
-                    'UNSCANNED': 1
-                }, {
-                    'name': 'TDS',
-                    'EXPOSED': 9,
-                    'MASKED': 4,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
-
-                }, {
-                    'name': 'DB2',
-                    'EXPOSED': 9,
-                    'MASKED': 5,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
-
-                }, {
-                    'name': 'DW1',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                },
-                {
-                    'name': 'APS-HIVE',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                }, {
-                    'name': 'SOC-S3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                }, {
-                    'name': 'STM-SS3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-                }]
-        });
-
-        var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
-        var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
-
-        var window = Ext.create('Ext.window.Window', {
-            // layout: {
-            //     type: 'vbox',
-            //     align: 'stretch'
-            // },
-            title: mainSectionName,
-            bodyStyle: {
-                background: '#ffffff',
-            },
-            maxHeight: windowHeight,
-            maxWidth: windowWidth,
-            minHeight: 100,
-            minWidth: 200,
-            autoScroll: true,
-            resizable: false,
-            plain: true,
-            modal: true,
-            bodyPadding: '0 10 0 10',
-            items: [
-                {
-                    xtype: 'panel',
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch'
-                    },
-                    margin: '0 10 10 10',
-                    items: [
-                        {
-                            xtype: 'label',
-                            text: chartFor,
-                            cls: 'drillDownHeader'
-                        },
-                        {
-                            xtype: 'label',
-                            text: categoryName,
-                            cls: 'drillDownLabel'
-                        },
-                        {
-                            xtype: 'gridpanel',
-                            defaultAlign: 'c?',
-                            store: columnStore,
-                            margin: '0 0 10 0',
-                            columns: [
-                                { text: 'NAME', dataIndex: 'name' },
-                                { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-                                { text: 'MASKED', dataIndex: 'MASKED' },
-                                { text: 'MONITORED', dataIndex: 'MONITORED' },
-                                { text: 'CLEANED', dataIndex: 'CLEANED' },
-                                { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
-                            ]
-                        }
-                    ],
-                }
-            ],
-            listeners: {
-                afterlayout: function (_this, layout, eOpts) {
-                    //if (_this.layout.firedTriggers == layout.layoutCount) {
-                    var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
-                    var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
-                    _this.setPosition(x, y);
-                    //}
-                }
-            }
-        });
-        window.show(null);
+        var config = {
+            mainSectionName: mainSectionName,
+            chartFor: chartFor,
+            categoryName: categoryName,
+            drillIn_DependentChartId: undefined,
+            actualDataMap: this.readData.getByKey(categoryName),
+            selectedFilter: selectedFilter  //selectedFilter is a global variable to know the currently selected filter out All, On-Premise and Cloud,
+        };        
+        var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.COVTREND_CHART, config);
     }
 });

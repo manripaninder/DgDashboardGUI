@@ -61,7 +61,7 @@ Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
         },
         {
             xtype: 'label',
-            text: 'On Premise',
+            text: 'On-Premises',
             style: {
                 fontSize: '11px',
                 fontWeight: 'normal',

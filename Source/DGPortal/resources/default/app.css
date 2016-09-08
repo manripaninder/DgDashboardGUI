@@ -131,6 +131,7 @@ label .x-component .x-component-default{
     font-family: montserratregular
 }
 
+/*class to apply pointer cursor on KMGauge chart */
 .pointChart
 {
     cursor: pointer;
@@ -145,5 +146,15 @@ label .x-component .x-component-default{
     /*background: palevioletred !important;*/
     background-image: url('graphics/ajax-loader.gif') !important;
     background-repeat: no-repeat !important;
-    background-position: center !important;  
+    background-position: center !important;     
+}
+
+/*class to apply pointer cursor on plotband paths of column chart */
+path{
+    cursor: pointer;
+}
+
+/*class to remove pointer cursor from plotbands path in highslide expanded chart */
+.noPointerCursor path{
+    cursor: default !important;
 }

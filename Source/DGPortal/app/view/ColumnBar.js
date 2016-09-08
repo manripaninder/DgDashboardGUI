@@ -188,7 +188,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     fontWeight: 'normal',
                     fontFamily: 'montserratregular',
                     color: '#646464',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
                 },
                 symbolHeight: 10,
                 symbolWidth: 10,
@@ -429,6 +429,11 @@ Ext.define('DGPortal.view.ColumnBar', {
                                             Ext.each(item.data.sourceList, function (item, index, array) {
                                                 var objValue = JSON.parse(item.value);
                                                 this.readData.push(objValue);
+
+                                                var source = objValue.source.toUpperCase();
+                                                var sourceLocation = objValue.sourceLocation.toUpperCase();
+
+                                                this.saveActualDataForDrillIn(source, objValue, sourceLocation);
                                             }, this);
                                         }
                                     }, this);
@@ -514,7 +519,12 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.readData = [];
         Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
+            var source = objValue.source.toUpperCase();
+            var sourceLocation = objValue.sourceLocation.toUpperCase();
+
             this.readData.push(objValue);
+
+            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
         }, this);
         this.populateProtectedData(this.readData, DGPortal.Constants.All);
     },
@@ -575,8 +585,9 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(policyName);
             }
 
-        }, this);
+            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
 
+        }, this);
         this.readData = xAxisCatgsMap.getValues();
         this.populateData(this.readData, DGPortal.Constants.All);
 
@@ -609,6 +620,8 @@ Ext.define('DGPortal.view.ColumnBar', {
             if (this.arSeriesLegends.indexOf(contentType) == -1) {
                 this.arSeriesLegends.push(contentType);
             }
+
+            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
 
         }, this);
 
@@ -647,8 +660,10 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(policyName);
             }
 
+            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+
         }, this);
-        this.readData = xAxisCatgsMap.getValues();;
+        this.readData = xAxisCatgsMap.getValues();
         this.populateData(this.readData, DGPortal.Constants.All);
 
     },
@@ -710,6 +725,9 @@ Ext.define('DGPortal.view.ColumnBar', {
             if (this.arSeriesLegends.indexOf(contentType) == -1) {
                 this.arSeriesLegends.push(contentType);
             }
+
+            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+
         }, this);
         this.readData = xAxisCatgsMap.getValues();
         this.populateContentData(this.readData, DGPortal.Constants.All);
@@ -782,6 +800,51 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.addPlotLineToContent(sourceLocation, this.cloudCount, this.onPremCount)
     },
 
+    saveActualDataForDrillIn: function (source, value, sourceLocation) {
+
+        if (!this.actualDataMap) {
+            this.actualDataMap = new Ext.util.HashMap();
+        }
+
+        if (sourceLocation) {
+            var sourceLocationObjMap, sourceObjMap;
+
+            //adding actual data in hashMap for drill-in
+            if (this.actualDataMap.containsKey(sourceLocation)) {
+                sourceLocationObjMap = this.actualDataMap.get(sourceLocation);
+                if (sourceLocationObjMap.containsKey(source)) {
+                    sourceObjMap = sourceLocationObjMap.get(source);
+                    sourceObjMap.arData.push(value);
+                }
+                else {
+                    sourceObjMap = { source: source, arData: [value] };
+                    sourceLocationObjMap.add(source, sourceObjMap);
+                }
+            }
+            else {
+                sourceLocationObjMap = new Ext.util.HashMap();
+                sourceObjMap = { source: source, arData: [value] };
+                sourceLocationObjMap.add(source, sourceObjMap);
+                this.actualDataMap.add(sourceLocation, sourceLocationObjMap);
+            }
+        }
+    },
+
+    // saveActualDataForDrillIn: function (source, value) {
+    //     if (!this.actualDataMap) {
+    //         this.actualDataMap = new Ext.util.HashMap();
+    //     }
+
+    //     //adding actual data in hashMap for drill-in
+    //     if (this.actualDataMap.containsKey(source)) {
+    //         var sourceObj = this.actualDataMap.get(source);
+    //         sourceObj.data.push(value);
+    //     }
+    //     else {
+    //         this.actualDataMap.add(source, value);
+    //     }
+    // },
+
     //method to add plot lines which for Content chart.
     addPlotLineToContent: function (sourceLocation, cloudCnt, onPremCnt) {
         // alert(this.cloudCount);
@@ -827,7 +890,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     width: 2,
                     id: 'onPremisePlotLine',
                     label: {
-                        text: 'ON-PREMISE',
+                        text: 'ON-PREMISES',
                         align: 'left',
                         verticalAlign: 'bottom',
                         rotation: 0,
@@ -857,144 +920,174 @@ Ext.define('DGPortal.view.ColumnBar', {
     },
 
     showDrillDown: function (mainSectionName, chartFor, categoryName) {
-        var columnStore = Ext.create('Ext.data.Store', {
-            storeId: 'ColumnStore',
-            autoLoad: false,
-            fields: ['name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'],
-            data: [{
-                'name': 'RS-LAKE',
-                'EXPOSED': 1,
-                'MASKED': 2,
-                'MONITORED': 3,
-                'CLEANED': 4,
-                'UNSCANNED': 5
-            },
-                {
-                    'name': 'STG',
-                    'EXPOSED': 6,
-                    'MASKED': 4,
-                    'MONITORED': 2,
-                    'CLEANED': 8,
-                    'UNSCANNED': 1
-                }, {
-                    'name': 'TDS',
-                    'EXPOSED': 9,
-                    'MASKED': 4,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
+        var config = {
+            mainSectionName: mainSectionName,
+            chartFor: chartFor,
+            categoryName: categoryName,
+            drillIn_DependentChartId: undefined,
+            actualDataMap: this.actualDataMap
+        };
 
-                }, {
-                    'name': 'DB2',
-                    'EXPOSED': 9,
-                    'MASKED': 5,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
+        var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.C_L_CHART, config);
 
-                }, {
-                    'name': 'DW1',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
+        // var arFields;
+        // var categoryData;
+        // var arColumns;
 
-                },
-                {
-                    'name': 'APS-HIVE',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
+        // //adding actual data in hashMap for drill-in
+        // if (this.actualDataMap.containsKey(categoryName)) {
+        //     var sourceObj = this.actualDataMap.get(categoryName);
+        //     categoryData = sourceObj;
+        //     if (Array.isArray(sourceObj)) {
+        //         arFields = Object.keys(sourceObj[0]);
+        //     } else {
+        //         arFields = Object.keys(sourceObj);
+        //     }
+        //     arColumns = arFields.map(function (x) { return { text: x.toUpperCase(), dataIndex: x } });
+        // }
 
-                }, {
-                    'name': 'SOC-S3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
+        // var columnStore = Ext.create('Ext.data.Store', {
+        //     storeId: 'ColumnStore',
+        //     autoLoad: false,
+        //     fields: arFields,
+        //     data: categoryData
+        //     //fields: ['name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'],
+        //     // data: [{
+        //     //     'source': categoryName,
+        //     //     'masked': 2,
+        //     //     'encrytionDone': 1,
+        //     //     'protectedCount': 3,
+        //     //     'sourceLocation': 'ON-PREMISE',
+        //     //     //'UNSCANNED': 5
+        //     // }]
+        //     // {
+        //     //     'name': 'STG',
+        //     //     'EXPOSED': 6,
+        //     //     'MASKED': 4,
+        //     //     'MONITORED': 2,
+        //     //     'CLEANED': 8,
+        //     //     'UNSCANNED': 1
+        //     // }, {
+        //     //     'name': 'TDS',
+        //     //     'EXPOSED': 9,
+        //     //     'MASKED': 4,
+        //     //     'MONITORED': 23,
+        //     //     'CLEANED': 12,
+        //     //     'UNSCANNED': 32
 
-                }, {
-                    'name': 'STM-SS3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-                }]
-        });
+        //     // }
+        //     // , {
+        //     //     'name': 'DB2',
+        //     //     'EXPOSED': 9,
+        //     //     'MASKED': 5,
+        //     //     'MONITORED': 23,
+        //     //     'CLEANED': 12,
+        //     //     'UNSCANNED': 32
 
-        var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
-        var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
+        //     // }, {
+        //     //     'name': 'DW1',
+        //     //     'EXPOSED': 11,
+        //     //     'MASKED': 8,
+        //     //     'MONITORED': 7,
+        //     //     'CLEANED': 13,
+        //     //     'UNSCANNED': 12
 
-        var window = Ext.create('Ext.window.Window', {
-            // layout: {
-            //     type: 'vbox',
-            //     align: 'stretch'
-            // },
-            title: mainSectionName,
-            bodyStyle: {
-                background: '#ffffff',
-            },
-            maxHeight: windowHeight,
-            maxWidth: windowWidth,
-            minHeight: 100,
-            minWidth: 200,
-            autoScroll: true,
-            resizable: false,
-            plain: true,
-            modal: true,
-            bodyPadding: '0 10 0 10',
-            items: [
-                {
-                    xtype: 'panel',
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch'
-                    },
-                    margin: '0 10 10 10',
-                    items: [
-                        {
-                            xtype: 'label',
-                            text: chartFor,
-                            cls: 'drillDownHeader'
-                        },
-                        {
-                            xtype: 'label',
-                            text: categoryName,
-                            cls: 'drillDownLabel'
-                        },
-                        {
-                            xtype: 'gridpanel',
-                            defaultAlign: 'c?',
-                            store: columnStore,
-                            margin: '0 0 10 0',
-                            columns: [
-                                { text: 'NAME', dataIndex: 'name' },
-                                { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-                                { text: 'MASKED', dataIndex: 'MASKED' },
-                                { text: 'MONITORED', dataIndex: 'MONITORED' },
-                                { text: 'CLEANED', dataIndex: 'CLEANED' },
-                                { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
-                            ]
-                        }
-                    ],
-                }
-            ],
-            listeners: {
-                afterlayout: function (_this, layout, eOpts) {
-                    //if (_this.layout.firedTriggers == layout.layoutCount) {                      
-                    var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
-                    var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
-                    _this.setPosition(x, y);
-                    //}
-                }
-            }
-        });
-        window.show(null);
+        //     // },
+        //     // {
+        //     //     'name': 'APS-HIVE',
+        //     //     'EXPOSED': 11,
+        //     //     'MASKED': 8,
+        //     //     'MONITORED': 7,
+        //     //     'CLEANED': 13,
+        //     //     'UNSCANNED': 12
+
+        //     // }, {
+        //     //     'name': 'SOC-S3',
+        //     //     'EXPOSED': 11,
+        //     //     'MASKED': 8,
+        //     //     'MONITORED': 7,
+        //     //     'CLEANED': 13,
+        //     //     'UNSCANNED': 12
+
+        //     // }, {
+        //     //     'name': 'STM-SS3',
+        //     //     'EXPOSED': 11,
+        //     //     'MASKED': 8,
+        //     //     'MONITORED': 7,
+        //     //     'CLEANED': 13,
+        //     //     'UNSCANNED': 12
+        //     // }]
+        // });
+
+        // var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
+        // var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
+
+        // var window = Ext.create('Ext.window.Window', {
+        //     // layout: {
+        //     //     type: 'vbox',
+        //     //     align: 'stretch'
+        //     // },
+        //     title: mainSectionName,
+        //     bodyStyle: {
+        //         background: '#ffffff',
+        //     },
+        //     maxHeight: windowHeight,
+        //     maxWidth: windowWidth,
+        //     minHeight: 100,
+        //     minWidth: 200,
+        //     autoScroll: true,
+        //     resizable: false,
+        //     plain: true,
+        //     modal: true,
+        //     bodyPadding: '0 10 0 10',
+        //     items: [
+        //         {
+        //             xtype: 'panel',
+        //             layout: {
+        //                 type: 'vbox',
+        //                 align: 'stretch'
+        //             },
+        //             margin: '0 10 10 10',
+        //             items: [
+        //                 {
+        //                     xtype: 'label',
+        //                     text: chartFor,
+        //                     cls: 'drillDownHeader'
+        //                 },
+        //                 {
+        //                     xtype: 'label',
+        //                     text: categoryName,
+        //                     cls: 'drillDownLabel'
+        //                 },
+        //                 {
+        //                     xtype: 'gridpanel',
+        //                     defaultAlign: 'c?',
+        //                     store: columnStore,
+        //                     margin: '0 0 10 0',
+        //                     columns: arColumns
+        //                     // columns: [
+        //                     //     { text: 'NAME', dataIndex: 'name' },
+        //                     //     { text: 'EXPOSED', dataIndex: 'EXPOSED' },
+        //                     //     { text: 'MASKED', dataIndex: 'MASKED' },
+        //                     //     { text: 'MONITORED', dataIndex: 'MONITORED' },
+        //                     //     { text: 'CLEANED', dataIndex: 'CLEANED' },
+        //                     //     { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
+        //                     // ]
+        //                 }
+        //             ],
+        //         }
+        //     ],
+        //     listeners: {
+        //         afterlayout: function (_this, layout, eOpts) {
+        //             //if (_this.layout.firedTriggers == layout.layoutCount) {                      
+        //             var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
+        //             var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
+        //             _this.setPosition(x, y);
+        //             //}
+        //         }
+        //     }
+        // });
+        // window.show(null);
     }
 });
 
@@ -1065,7 +1158,7 @@ addPlotLineToContent = function (chart, sourceLocation, cloudCnt, onPremCnt) {
                 width: 2,
                 id: 'onPremisePlotLine',
                 label: {
-                    text: 'ON-PREMISE',
+                    text: 'ON-PREMISES',
                     align: 'left',
                     verticalAlign: 'bottom',
                     rotation: 0,
@@ -1100,6 +1193,14 @@ hs.Expander.prototype.onAfterExpand = function () {
         if (!this.hasChart) {
             chartOptions.chart.renderTo = $('.highslide-body')[0];
             chartOptions.exporting.buttons.contextButton.enabled = false;
+
+            //remove cursor pointer from series and plotbands
+            chartOptions.plotOptions.series.cursor = 'default';
+            chartOptions.chart.className = 'noPointerCursor';
+
+            //remove click event handlers from series
+            chartOptions.plotOptions.series.point.events.click = null;            
+
             var hsChart = new Highcharts.Chart(chartOptions);
             //removePlotLineToContent(hsChart);
             //addPlotLineToContent(hsChart, DGPortal.Constants.All, 1, 2);

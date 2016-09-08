@@ -6,6 +6,9 @@ Ext.define('DGPortal.Constants', {
     OnPremise: 'ON-PREMISE',
     Cloud: 'CLOUD',
     All: 'ALL',
+    KMGAUGE: 'KMGAUGE',  //KM Gauge chart
+    C_L_CHART: 'C_L_CHART', //'Column chart' 
+    COVTREND_CHART: 'COVTREND_CHART', //Coverage Trend chart
     //API_URL:'https://192.168.2.209:8080/dgDashboardRest/metadata/sources'
     getNumberUnit: function (numberVal) {
         if (!isNaN(numberVal)) {

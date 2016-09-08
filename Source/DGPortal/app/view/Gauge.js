@@ -248,6 +248,8 @@ Ext.define('DGPortal.view.Gauge', {
 
             }
         );
+
+        //this.applyClickHandler_PointerCursor();
     },
 
     afterGaugeRendered: function () {
@@ -263,23 +265,43 @@ Ext.define('DGPortal.view.Gauge', {
     getStoreData: function (records) {
         this.readData = [];
         //console.log(records);
-        if (this.store && this.store.first()) {
-            var arData = this.store.first().data.sourceList;
-            if (arData && arData.length > 0) {
-                arData.forEach(function (element, index, array) {
-                    var objSource = JSON.parse(element.value);
-                    this.readData.push(objSource);
-                }, this);
+        if (this.id == 'Gauge_KM2') {
+            if (this.store && this.store.first()) {
+                var arData = this.store.first().data.sourceList;
+                if (arData && arData.length > 0) {
+                    arData.forEach(function (element, index, array) {
+                        var objValue = JSON.parse(element.value);
+                        this.readData.push(objValue);
+                        var source = objValue.source.toUpperCase();
+                        var sourceLocation = objValue.sourceLocation.toUpperCase();
 
-                // arData.forEach(function (element, index, array) {
-                //     var objSource = JSON.parse(element.value);
-                //     this.readData.push(objSource);
-                // }, this);
+                        this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+                    }, this);
 
-                this.populateData(this.readData, DGPortal.Constants.All);
+                    this.populateData(this.readData, DGPortal.Constants.All);
+                }
             }
-
         }
+        else {
+            if (this.store && this.store.first()) {
+                var arData = this.store.first().data.sourceList;
+                if (arData && arData.length > 0) {
+                    arData.forEach(function (element, index, array) {
+                        var objValue = JSON.parse(element.value);
+                        this.readData.push(objValue);
+                    }, this);
+
+                    // arData.forEach(function (element, index, array) {
+                    //     var objValue = JSON.parse(element.value);
+                    //     this.readData.push(objValue);
+                    // }, this);
+
+                    this.populateData(this.readData, DGPortal.Constants.All);
+                }
+
+            }
+        }
+
     },
 
     populateData: function (readData, filterType) {
@@ -380,7 +402,7 @@ Ext.define('DGPortal.view.Gauge', {
                     monitoredFiles = DGPortal.Constants.getNumberUnit(monitoredFiles);
                     monitoredTables = DGPortal.Constants.getNumberUnit(monitoredTables);
 
-                    this.dataObj.yVal = 100;
+                    this.dataObj.yVal = totalFiles_Tables > 0 ? 100 : 0;
                     this.dataObj.subtitle = totalFiles_Tables ? totalFiles_Tables : '0';
                     this.dataObj.title = 'ALERTED IN LAST 24HRS ' + monitoredFiles + ' ' + fileText + '/'
                         + monitoredTables + ' ' + tableText;
@@ -413,187 +435,54 @@ Ext.define('DGPortal.view.Gauge', {
         }
     },
 
-    showDrillDown: function (mainSectionName, chartFor, categoryName) {
-        // Ext.define('ColumnModel', {
-        //     extend: 'Ext.data.Model',
-        //     fields: [
-        //         'name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'
-        //     ],
-        // });
-
-        var columnStore = Ext.create('Ext.data.Store', {
-            storeId: 'ColumnStore',
-            autoLoad: false,
-            //model: 'ColumnModel',
-            fields: [
-                'name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'
-            ],
-            data: [
-                {
-                    'name': 'RS-LAKE',
-                    'EXPOSED': 1,
-                    'MASKED': 2,
-                    'MONITORED': 3,
-                    'CLEANED': 4,
-                    'UNSCANNED': 5
-                },
-                {
-                    'name': 'STG',
-                    'EXPOSED': 6,
-                    'MASKED': 4,
-                    'MONITORED': 2,
-                    'CLEANED': 8,
-                    'UNSCANNED': 1
-                },
-                {
-                    'name': 'TDS',
-                    'EXPOSED': 9,
-                    'MASKED': 4,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
-
-                },
-                {
-                    'name': 'DB2',
-                    'EXPOSED': 9,
-                    'MASKED': 5,
-                    'MONITORED': 23,
-                    'CLEANED': 12,
-                    'UNSCANNED': 32
-
-                },
-                {
-                    'name': 'DW1',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                },
-                {
-                    'name': 'APS-HIVE',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                },
-                {
-                    'name': 'SOC-S3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-
-                },
-                {
-                    'name': 'STM-SS3',
-                    'EXPOSED': 11,
-                    'MASKED': 8,
-                    'MONITORED': 7,
-                    'CLEANED': 13,
-                    'UNSCANNED': 12
-                }
-            ]
-            //pageSize: 4,           
-        });
-
-        var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
-        var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
-
-        var window = Ext.create('Ext.window.Window', {
-            // layout: {
-            //     type: 'vbox',
-            //     align: 'stretch'
-            // },            
-            title: mainSectionName,
-            bodyStyle: {
-                background: '#ffffff',
-            },
-            maxHeight: windowHeight,
-            maxWidth: windowWidth,
-            minHeight: 100,
-            minWidth: 200,
-            autoScroll: true,
-            resizable: false,
-            plain: true,
-            modal: true,
-            bodyPadding: '0 10 0 10',
-            items: [
-                {
-                    xtype: 'panel',
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch'
-                    },
-                    margin: '0 10 10 10',
-                    items: [
-                        {
-                            xtype: 'label',
-                            text: chartFor,
-                            cls: 'drillDownHeader',
-                        },
-                        {
-                            xtype: 'gridpanel',
-                            defaultAlign: 'c?',
-                            store: columnStore,
-                            margin: '0 0 10 0',
-                            autoScroll: false,
-                            columns: [
-                                { text: 'NAME', dataIndex: 'name' },
-                                { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-                                { text: 'MASKED', dataIndex: 'MASKED' },
-                                { text: 'MONITORED', dataIndex: 'MONITORED' },
-                                { text: 'CLEANED', dataIndex: 'CLEANED' },
-                                { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
-                            ]
-                            // bbar: {
-                            //     xtype: 'pagingtoolbar',
-                            //     store: columnStore,
-                            //     displayInfo: true,
-                            //     displayMsg: 'Displaying {0} to {1} of {2} &nbsp;records ',
-                            //     emptyMsg: "No records to display&nbsp;"
-                            // }
-                        }
-                    ],
-                }
-            ],
-            listeners: {
-                afterlayout: function (_this, layout, eOpts) {
-                    //if (_this.layout.firedTriggers == layout.layoutCount) {                       
-                    var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
-                    var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
-                    _this.setPosition(x, y);
-                    //}
-                }
-            }
-        });
-
-        if (selectedFilter == DGPortal.Constants.All) {
-            var secondGrid = Ext.create('Ext.grid.Panel', {
-                store: columnStore,
-                margin: '0 0 10 0',
-                columns: [
-                    { text: 'NAME', dataIndex: 'name' },
-                    { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-                    { text: 'MASKED', dataIndex: 'MASKED' },
-                    { text: 'MONITORED', dataIndex: 'MONITORED' },
-                    { text: 'CLEANED', dataIndex: 'CLEANED' },
-                    { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
-                ],
-            });
-            window.items.items[0].add(secondGrid);
-            //window.items.add(secondGrid);
+    saveActualDataForDrillIn: function (source, value, sourceLocation) {
+        if (!this.actualDataMap) {
+            this.actualDataMap = new Ext.util.HashMap();
         }
 
-        window.show();
-        // var x = ((Ext.getBody().dom.clientWidth - window.getWidth()) / 2);
-        // var y = ((Ext.getBody().dom.clientHeight - window.getHeight()) / 2);
-        // window.setPosition(x, y);
-    }
+        if (sourceLocation) {
+            var sourceLocationObjMap, sourceObjMap;
+
+            //adding actual data in hashMap for drill-in
+            if (this.actualDataMap.containsKey(sourceLocation)) {
+                sourceLocationObjMap = this.actualDataMap.get(sourceLocation);
+                if (sourceLocationObjMap.containsKey(source)) {
+                    sourceObjMap = sourceLocationObjMap.get(source);
+                    sourceObjMap.arData.push(value);
+                }
+                else {
+                    sourceObjMap = { source: source, arData: [value] };
+                    sourceLocationObjMap.add(source, sourceObjMap);
+                }
+            }
+            else {
+                sourceLocationObjMap = new Ext.util.HashMap();
+                sourceObjMap = { source: source, arData: [value] };
+                sourceLocationObjMap.add(source, sourceObjMap);
+                this.actualDataMap.add(sourceLocation, sourceLocationObjMap);
+            }
+        }
+    },
+
+    showDrillDown: function (mainSectionName, chartFor, categoryName) {
+        var config = {
+            mainSectionName: mainSectionName,
+            chartFor: chartFor,
+            categoryName: categoryName,
+            drillIn_DependentChartId: this.drillIn_DependentChartId,
+            actualDataMap: this.actualDataMap,
+            selectedFilter: selectedFilter  //selectedFilter is a global variable to know the currently selected filter out All, On-Premise and Cloud,
+        };
+
+        var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.KMGAUGE, config);        
+    },
+
+    // applyClickHandler_PointerCursor: function () {
+    //     $("#" + this.id + " " + "path").on('click', { elementObj: this }, function (e) {
+    //         var gaugeObj = e.data.elementObj;
+    //         gaugeObj.showDrillDown("ASSETS IN SCOPE", gaugeObj.kmType);
+    //     });
+    // }
 
 });
+
