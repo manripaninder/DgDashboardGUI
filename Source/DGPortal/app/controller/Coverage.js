@@ -7,7 +7,7 @@ Ext.define('DGPortal.controller.Coverage', {
 
     ],
     init: function () {
-
+this.setHeaderNames();
         this.control({
             '#btnAll': {
                 toggle: function (_this, pressed, eOpts) {
@@ -298,6 +298,38 @@ Ext.define('DGPortal.controller.Coverage', {
             var lblCloudTotal = Ext.ComponentQuery.query('#lblCloudTotal')[0];
             lblCloudTotal.setText(cloudCount);
         }
-    }
+    },
+
+   setHeaderNames: function (){
+    headerNamesHashMap = new Ext.util.HashMap();
+    headerNamesHashMap.add('source', 'SOURCE');
+    headerNamesHashMap.add('policyId', 'POLICY ID');
+    headerNamesHashMap.add('policyName', 'POLICY NAME');
+    headerNamesHashMap.add('exposed', 'EXPOSED');
+    headerNamesHashMap.add('sourceLocation', 'SOURCE LOCATION');
+    headerNamesHashMap.add('totalFileCount', 'TOTAL FILE COUNT');
+    headerNamesHashMap.add('totalTableCount', 'TOTAL TABLE COUNT');
+    headerNamesHashMap.add('operationFileCount', 'OPERATION FILE COUNT');
+    headerNamesHashMap.add('operationTableCount', 'OPERATION TABLE COUNT');
+    headerNamesHashMap.add('protectionFileCount', 'PROTECTED FILE COUNT');
+    headerNamesHashMap.add('protectionTableCount', 'PROTECTION TABLE COUNT');
+    headerNamesHashMap.add('monitoredFileCount', 'MONITORED FILE COUNT');
+    headerNamesHashMap.add('monitoredTableCount', 'MONITORED TABLE COUNT');
+    headerNamesHashMap.add('unscannedFileCount', 'UNSCANNED FILE COUNT');
+    headerNamesHashMap.add('unscannedTableCount', 'UNSCANNED TABLE COUNT');
+    headerNamesHashMap.add('sourceLocation', 'SOURCE LOCATION');
+    headerNamesHashMap.add('serverVersion', 'SERVER VERSION');
+    headerNamesHashMap.add('serverDistribution', 'SERVER DISTRIBUTION');
+    headerNamesHashMap.add('maskedEncryted', 'MASKED / ENCRYPTED');
+    headerNamesHashMap.add('monitored', 'MONITORED');
+    headerNamesHashMap.add('clean', 'CLEAN');
+    headerNamesHashMap.add('unscanned', 'UNSCANNED');
+    headerNamesHashMap.add('encrytionDone', 'ENCRYPTION DONE');
+    headerNamesHashMap.add('protectedCount', 'PROTECTED COUNT');
+    headerNamesHashMap.add('contentType', 'CONTENT TYPE');
+    headerNamesHashMap.add('fileTableCount', 'FILE TABLE COUNT');
+    headerNamesHashMap.add('masked', 'MASKED');
+  
+}
 
 });

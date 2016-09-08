@@ -1,3 +1,6 @@
+
+
+
 Ext.namespace('DGPortal.factory.ChartDrillIn');
 
 /** 
@@ -25,7 +28,7 @@ Ext.define('DGPortal.factory.ChartDrillIn', {
     },
     showChartDrillIn: function (config) {
         var arFields;
-        var categoryData;        
+        var categoryData;
         var mainSectionName = config.mainSectionName;
         var categoryName = config.categoryName;
         var chartFor = config.chartFor;
@@ -51,6 +54,9 @@ Ext.define('DGPortal.factory.ChartDrillIn', {
                 break;
             }
         }
+
+
+
 
         var columnStore = Ext.create('Ext.data.Store', {
             storeId: 'ColumnStore',
@@ -306,17 +312,23 @@ Ext.define('DGPortal.factory.ChartDrillIn', {
 function GridData(data, arFields) {
     this.data = data;
     this.arFields = arFields;
-    this.arColumns = getGridColumns(arFields);;
+    this.arColumns = getGridColumns(arFields);
 }
 
 function getGridColumns(arFields) {
     var arColumns = [];
+ 
     if (arFields) {
         arFields.forEach(function (element) {
             if (element.toUpperCase() != 'SOURCELOCATION') {
-                arColumns.push({ text: element.toUpperCase(), dataIndex: element });
+                var val = headerNamesHashMap.get(element);
+                arColumns.push({ text: val, dataIndex: element });
             }
         });
     }
     return arColumns;
 }
+
+
+   
+   
