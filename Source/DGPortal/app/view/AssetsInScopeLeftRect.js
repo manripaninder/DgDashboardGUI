@@ -1,8 +1,8 @@
 Ext.define('DGPortal.view.AssetsInScopeLeftRect', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.assetsInScopeLeftRect',
-    height: 140,
-    margin: '0 10 0 10',
+    height: 150,
+    margin: '0 0 10 10',
     layout: {
         type: 'table',
         columns: 2,

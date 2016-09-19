@@ -203,6 +203,13 @@ Ext.define('DGPortal.view.ColumnBar', {
                             click: function (e) {
                                 var categoryName = this.category;
                                 var compId = this.series.chart.renderTo.id;
+
+                                //if compId is not present that means click event is from highSlide window so taking originalRenderTo_Id from it.
+                                if (!compId) {
+                                    compId = this.series.chart.options.chart.originalRenderTo_Id;
+                                    //console.log(compId);
+                                }
+
                                 var compObj = Ext.ComponentQuery.query('#' + compId)[0];
                                 compObj.showDrillDown(compObj.mainSectionName, compObj.chartTitle, categoryName);
                             }
@@ -431,9 +438,9 @@ Ext.define('DGPortal.view.ColumnBar', {
                                                 this.readData.push(objValue);
 
                                                 var source = objValue.source.toUpperCase();
-                                                var sourceLocation = objValue.sourceLocation.toUpperCase();
+                                                var location = objValue.location.toUpperCase();
 
-                                                this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+                                                this.saveActualDataForDrillIn(source, objValue, location);
                                             }, this);
                                         }
                                     }, this);
@@ -479,7 +486,7 @@ Ext.define('DGPortal.view.ColumnBar', {
     //     });
     // },
 
-    populateCASData: function (readData, sourceLocation) {
+    populateCASData: function (readData, location) {
         this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071ce', '#44b649', '#f5852b'];
         // console.log("Colors of " + this.id + " " + this.dataObj.colors);
         var exposed = { name: 'EXPOSED', data: [] };
@@ -497,12 +504,12 @@ Ext.define('DGPortal.view.ColumnBar', {
 
         if (readData && readData.length > 0) {
             readData.forEach(function (element, index, array) {
-                if (sourceLocation == DGPortal.Constants.All || sourceLocation == element.sourceLocation.toUpperCase()) {
+                if (location == DGPortal.Constants.All || location == element.location.toUpperCase()) {
                     arXAxisCatgs.push(element.source.toUpperCase());
                     exposed.data.push(element.exposed);
                     masked.data.push(element.maskedEncryted);
                     monitored.data.push(element.monitored);
-                    cleaned.data.push(element.clean);
+                    cleaned.data.push(element.cleaned);
                     unscanned.data.push(element.unscanned);
                 }
             });
@@ -520,16 +527,16 @@ Ext.define('DGPortal.view.ColumnBar', {
         Ext.each(arData, function (element, index, array) {
             var objValue = JSON.parse(element.value);
             var source = objValue.source.toUpperCase();
-            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var location = objValue.location.toUpperCase();
 
             this.readData.push(objValue);
 
-            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+            this.saveActualDataForDrillIn(source, objValue, location);
         }, this);
         this.populateProtectedData(this.readData, DGPortal.Constants.All);
     },
 
-    populateProtectedData: function (readData, sourceLocation) {
+    populateProtectedData: function (readData, location) {
         this.dataObj.colors = ['#f5852b', '#fdbf2d', '#0071ce'];
         // console.log("Colors of " + this.id + " " + this.dataObj.colors);
         var arXAxisCatgs = [];
@@ -538,7 +545,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         var monitored = { name: 'MONITORED', data: [] };
         if (readData && Array.isArray(readData)) {
             Ext.each(readData, function (element, index, array) {
-                if (sourceLocation == DGPortal.Constants.All || element.sourceLocation.toUpperCase() == sourceLocation) {
+                if (location == DGPortal.Constants.All || element.location.toUpperCase() == location) {
                     masked.data.push(element.masked);
                     encrypted.data.push(element.encrytionDone);
                     monitored.data.push(element.protectedCount);
@@ -567,7 +574,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
             var policyName = objValue.policyName.toUpperCase();
-            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var location = objValue.location.toUpperCase();
             var exposedVal = objValue.exposed;
 
             //adding unique sources to hashMap
@@ -575,7 +582,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(policyName, exposedVal);
             } else {
-                var xAxisData = new XAxisData(source, sourceLocation);
+                var xAxisData = new XAxisData(source, location);
                 xAxisData.addSeriesData(policyName, exposedVal);
                 xAxisCatgsMap.add(source, xAxisData);
             }
@@ -585,7 +592,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(policyName);
             }
 
-            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+            this.saveActualDataForDrillIn(source, objValue, location);
 
         }, this);
         this.readData = xAxisCatgsMap.getValues();
@@ -605,13 +612,13 @@ Ext.define('DGPortal.view.ColumnBar', {
             //var objValue = element.value;
             var source = objValue.source.toUpperCase();
             var contentType = objValue.contentType.toUpperCase();
-            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var location = objValue.location.toUpperCase();
             var unscannedVal = objValue.unscanned;
             if (xAxisCatgsMap.containsKey(source)) {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(contentType, unscannedVal);
             } else {
-                var xAxisData = new XAxisData(source, sourceLocation);
+                var xAxisData = new XAxisData(source, location);
                 xAxisData.addSeriesData(contentType, unscannedVal);
                 xAxisCatgsMap.add(source, xAxisData);
             }
@@ -621,7 +628,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(contentType);
             }
 
-            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+            this.saveActualDataForDrillIn(source, objValue, location);
 
         }, this);
 
@@ -643,14 +650,14 @@ Ext.define('DGPortal.view.ColumnBar', {
             var source = objValue.source.toUpperCase();
             var policyName = objValue.policyName.toUpperCase();
             var monitoredVal = objValue.monitored;
-            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var location = objValue.location.toUpperCase();
 
             //adding unique sources to hashMap
             if (xAxisCatgsMap.containsKey(source)) {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(policyName, monitoredVal);
             } else {
-                var xAxisData = new XAxisData(source, sourceLocation);
+                var xAxisData = new XAxisData(source, location);
                 xAxisData.addSeriesData(policyName, monitoredVal);
                 xAxisCatgsMap.add(source, xAxisData);
             }
@@ -660,7 +667,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(policyName);
             }
 
-            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+            this.saveActualDataForDrillIn(source, objValue, location);
 
         }, this);
         this.readData = xAxisCatgsMap.getValues();
@@ -668,7 +675,7 @@ Ext.define('DGPortal.view.ColumnBar', {
 
     },
 
-    populateData: function (readData, sourceLocation) {
+    populateData: function (readData, location) {
         // console.log("Colors of " + this.id + " " + this.dataObj.colors);
         var arXAxisCatgs = [];
         var sdMap = new Ext.util.HashMap();
@@ -678,7 +685,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         });
         if (readData && Array.isArray(readData)) {
             Ext.each(readData, function (xAxisCatObj, index, array) {
-                if (sourceLocation == DGPortal.Constants.All || xAxisCatObj.sourceLocation == sourceLocation) {
+                if (location == DGPortal.Constants.All || xAxisCatObj.location == location) {
                     arXAxisCatgs.push(xAxisCatObj.source);
                     var seriesData = xAxisCatObj.seriesData;
                     sdMap.each(function (key, value, length) {
@@ -709,7 +716,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             var objValue = JSON.parse(element.value);
             //var objValue = element.value;           
             var source = objValue.source.toUpperCase();
-            var sourceLocation = objValue.sourceLocation.toUpperCase();
+            var location = objValue.location.toUpperCase();
             var contentType = objValue.contentType.toUpperCase();
             var fileTableCount = objValue.fileTableCount;
             //adding unique sources to hashMap
@@ -717,7 +724,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 var xAxisData = xAxisCatgsMap.get(source);
                 xAxisData.addSeriesData(contentType, fileTableCount);
             } else {
-                var xAxisData = new XAxisData(source, sourceLocation);
+                var xAxisData = new XAxisData(source, location);
                 xAxisData.addSeriesData(contentType, fileTableCount);
                 xAxisCatgsMap.add(source, xAxisData);
             }
@@ -726,7 +733,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                 this.arSeriesLegends.push(contentType);
             }
 
-            this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+            this.saveActualDataForDrillIn(source, objValue, location);
 
         }, this);
         this.readData = xAxisCatgsMap.getValues();
@@ -736,7 +743,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         // this.dataObj.series = sdMap.getValues();
     },
 
-    populateContentData: function (readData, sourceLocation) {
+    populateContentData: function (readData, location) {
         this.dataObj.colors = ['#e61d27', '#fdbf2d', '#0071ce', '#44b649', '#f5852b'];//['#ec297b', '#fdbf2d', '#0071ce', '#f5852b', '#44b649'];
         var arXAxisCatgs = [];
         var arCloud = [];
@@ -748,10 +755,10 @@ Ext.define('DGPortal.view.ColumnBar', {
         });
 
         Ext.each(readData, function (item, index, array) {
-            if (item.sourceLocation == DGPortal.Constants.OnPremise) {
+            if (item.location == DGPortal.Constants.OnPremise) {
                 arOnPremises.push(item);
             }
-            else if (item.sourceLocation == DGPortal.Constants.Cloud) {
+            else if (item.location == DGPortal.Constants.Cloud) {
                 arCloud.push(item);
             }
         });
@@ -762,7 +769,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         //creating property to know how many On-Premises units are present for showing label below x-axis.         
         this.onPremCount = arOnPremises.length;
 
-        if (sourceLocation == DGPortal.Constants.All || sourceLocation == DGPortal.Constants.Cloud) {
+        if (location == DGPortal.Constants.All || location == DGPortal.Constants.Cloud) {
             Ext.each(arCloud, function (item, index, array) {
                 arXAxisCatgs.push(item.source);
                 var seriesData = item.seriesData;
@@ -778,7 +785,7 @@ Ext.define('DGPortal.view.ColumnBar', {
             });
         }
 
-        if (sourceLocation == DGPortal.Constants.All || sourceLocation == DGPortal.Constants.OnPremise) {
+        if (location == DGPortal.Constants.All || location == DGPortal.Constants.OnPremise) {
             Ext.each(arOnPremises, function (item, index, array) {
                 arXAxisCatgs.push(item.source);
                 var seriesData = item.seriesData;
@@ -797,35 +804,35 @@ Ext.define('DGPortal.view.ColumnBar', {
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = sdMap.getValues();
         this.drawChart();
-        this.addPlotLineToContent(sourceLocation, this.cloudCount, this.onPremCount)
+        this.addPlotLineToContent(location, this.cloudCount, this.onPremCount)
     },
 
-    saveActualDataForDrillIn: function (source, value, sourceLocation) {
+    saveActualDataForDrillIn: function (source, value, location) {
 
         if (!this.actualDataMap) {
             this.actualDataMap = new Ext.util.HashMap();
         }
 
-        if (sourceLocation) {
-            var sourceLocationObjMap, sourceObjMap;
+        if (location) {
+            var locationObjMap, sourceObjMap;
 
             //adding actual data in hashMap for drill-in
-            if (this.actualDataMap.containsKey(sourceLocation)) {
-                sourceLocationObjMap = this.actualDataMap.get(sourceLocation);
-                if (sourceLocationObjMap.containsKey(source)) {
-                    sourceObjMap = sourceLocationObjMap.get(source);
+            if (this.actualDataMap.containsKey(location)) {
+                locationObjMap = this.actualDataMap.get(location);
+                if (locationObjMap.containsKey(source)) {
+                    sourceObjMap = locationObjMap.get(source);
                     sourceObjMap.arData.push(value);
                 }
                 else {
                     sourceObjMap = { source: source, arData: [value] };
-                    sourceLocationObjMap.add(source, sourceObjMap);
+                    locationObjMap.add(source, sourceObjMap);
                 }
             }
             else {
-                sourceLocationObjMap = new Ext.util.HashMap();
+                locationObjMap = new Ext.util.HashMap();
                 sourceObjMap = { source: source, arData: [value] };
-                sourceLocationObjMap.add(source, sourceObjMap);
-                this.actualDataMap.add(sourceLocation, sourceLocationObjMap);
+                locationObjMap.add(source, sourceObjMap);
+                this.actualDataMap.add(location, locationObjMap);
             }
         }
     },
@@ -846,10 +853,10 @@ Ext.define('DGPortal.view.ColumnBar', {
     // },
 
     //method to add plot lines which for Content chart.
-    addPlotLineToContent: function (sourceLocation, cloudCnt, onPremCnt) {
+    addPlotLineToContent: function (location, cloudCnt, onPremCnt) {
         // alert(this.cloudCount);
         if (this.chart) {
-            if (sourceLocation == DGPortal.Constants.All && cloudCnt > 0 && onPremCnt > 0) {
+            if (location == DGPortal.Constants.All && cloudCnt > 0 && onPremCnt > 0) {
 
                 // var eachUnitWidth = this.chart.chartWidth / (cloudCnt + onPremCnt);
                 // var cloudPixels = ((eachUnitWidth * cloudCnt) / 2);
@@ -929,165 +936,6 @@ Ext.define('DGPortal.view.ColumnBar', {
         };
 
         var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.C_L_CHART, config);
-
-        // var arFields;
-        // var categoryData;
-        // var arColumns;
-
-        // //adding actual data in hashMap for drill-in
-        // if (this.actualDataMap.containsKey(categoryName)) {
-        //     var sourceObj = this.actualDataMap.get(categoryName);
-        //     categoryData = sourceObj;
-        //     if (Array.isArray(sourceObj)) {
-        //         arFields = Object.keys(sourceObj[0]);
-        //     } else {
-        //         arFields = Object.keys(sourceObj);
-        //     }
-        //     arColumns = arFields.map(function (x) { return { text: x.toUpperCase(), dataIndex: x } });
-        // }
-
-        // var columnStore = Ext.create('Ext.data.Store', {
-        //     storeId: 'ColumnStore',
-        //     autoLoad: false,
-        //     fields: arFields,
-        //     data: categoryData
-        //     //fields: ['name', 'EXPOSED', 'MASKED', 'MONITORED', 'CLEANED', 'UNSCANNED'],
-        //     // data: [{
-        //     //     'source': categoryName,
-        //     //     'masked': 2,
-        //     //     'encrytionDone': 1,
-        //     //     'protectedCount': 3,
-        //     //     'sourceLocation': 'ON-PREMISE',
-        //     //     //'UNSCANNED': 5
-        //     // }]
-        //     // {
-        //     //     'name': 'STG',
-        //     //     'EXPOSED': 6,
-        //     //     'MASKED': 4,
-        //     //     'MONITORED': 2,
-        //     //     'CLEANED': 8,
-        //     //     'UNSCANNED': 1
-        //     // }, {
-        //     //     'name': 'TDS',
-        //     //     'EXPOSED': 9,
-        //     //     'MASKED': 4,
-        //     //     'MONITORED': 23,
-        //     //     'CLEANED': 12,
-        //     //     'UNSCANNED': 32
-
-        //     // }
-        //     // , {
-        //     //     'name': 'DB2',
-        //     //     'EXPOSED': 9,
-        //     //     'MASKED': 5,
-        //     //     'MONITORED': 23,
-        //     //     'CLEANED': 12,
-        //     //     'UNSCANNED': 32
-
-        //     // }, {
-        //     //     'name': 'DW1',
-        //     //     'EXPOSED': 11,
-        //     //     'MASKED': 8,
-        //     //     'MONITORED': 7,
-        //     //     'CLEANED': 13,
-        //     //     'UNSCANNED': 12
-
-        //     // },
-        //     // {
-        //     //     'name': 'APS-HIVE',
-        //     //     'EXPOSED': 11,
-        //     //     'MASKED': 8,
-        //     //     'MONITORED': 7,
-        //     //     'CLEANED': 13,
-        //     //     'UNSCANNED': 12
-
-        //     // }, {
-        //     //     'name': 'SOC-S3',
-        //     //     'EXPOSED': 11,
-        //     //     'MASKED': 8,
-        //     //     'MONITORED': 7,
-        //     //     'CLEANED': 13,
-        //     //     'UNSCANNED': 12
-
-        //     // }, {
-        //     //     'name': 'STM-SS3',
-        //     //     'EXPOSED': 11,
-        //     //     'MASKED': 8,
-        //     //     'MONITORED': 7,
-        //     //     'CLEANED': 13,
-        //     //     'UNSCANNED': 12
-        //     // }]
-        // });
-
-        // var windowHeight = Ext.getBody().dom.clientHeight * 0.8;
-        // var windowWidth = Ext.getBody().dom.clientWidth * 0.8;
-
-        // var window = Ext.create('Ext.window.Window', {
-        //     // layout: {
-        //     //     type: 'vbox',
-        //     //     align: 'stretch'
-        //     // },
-        //     title: mainSectionName,
-        //     bodyStyle: {
-        //         background: '#ffffff',
-        //     },
-        //     maxHeight: windowHeight,
-        //     maxWidth: windowWidth,
-        //     minHeight: 100,
-        //     minWidth: 200,
-        //     autoScroll: true,
-        //     resizable: false,
-        //     plain: true,
-        //     modal: true,
-        //     bodyPadding: '0 10 0 10',
-        //     items: [
-        //         {
-        //             xtype: 'panel',
-        //             layout: {
-        //                 type: 'vbox',
-        //                 align: 'stretch'
-        //             },
-        //             margin: '0 10 10 10',
-        //             items: [
-        //                 {
-        //                     xtype: 'label',
-        //                     text: chartFor,
-        //                     cls: 'drillDownHeader'
-        //                 },
-        //                 {
-        //                     xtype: 'label',
-        //                     text: categoryName,
-        //                     cls: 'drillDownLabel'
-        //                 },
-        //                 {
-        //                     xtype: 'gridpanel',
-        //                     defaultAlign: 'c?',
-        //                     store: columnStore,
-        //                     margin: '0 0 10 0',
-        //                     columns: arColumns
-        //                     // columns: [
-        //                     //     { text: 'NAME', dataIndex: 'name' },
-        //                     //     { text: 'EXPOSED', dataIndex: 'EXPOSED' },
-        //                     //     { text: 'MASKED', dataIndex: 'MASKED' },
-        //                     //     { text: 'MONITORED', dataIndex: 'MONITORED' },
-        //                     //     { text: 'CLEANED', dataIndex: 'CLEANED' },
-        //                     //     { text: 'UNSCANNED', dataIndex: 'UNSCANNED' }
-        //                     // ]
-        //                 }
-        //             ],
-        //         }
-        //     ],
-        //     listeners: {
-        //         afterlayout: function (_this, layout, eOpts) {
-        //             //if (_this.layout.firedTriggers == layout.layoutCount) {                      
-        //             var x = ((Ext.getBody().dom.clientWidth - _this.getWidth()) / 2);
-        //             var y = ((Ext.getBody().dom.clientHeight - _this.getHeight()) / 2);
-        //             _this.setPosition(x, y);
-        //             //}
-        //         }
-        //     }
-        // });
-        // window.show(null);
     }
 });
 
@@ -1111,6 +959,12 @@ addPlotBand = function (chartObj, noOfCategories) {
                         var index = this.options.index;
                         var categoryName = this.axis.categories[index];
                         var compId = this.axis.chart.renderTo.id;
+
+                        //if compId is not present that means click event is from highSlide window so taking originalRenderTo_Id from it.
+                        if (!compId) {
+                            compId = this.axis.chart.options.chart.originalRenderTo_Id;
+                        }
+
                         var compObj = Ext.ComponentQuery.query('#' + compId)[0];
                         compObj.showDrillDown(compObj.mainSectionName, compObj.chartTitle, categoryName);
                     }
@@ -1123,10 +977,10 @@ addPlotBand = function (chartObj, noOfCategories) {
     }
 }
 
-addPlotLineToContent = function (chart, sourceLocation, cloudCnt, onPremCnt) {
+addPlotLineToContent = function (chart, location, cloudCnt, onPremCnt) {
     // alert(this.cloudCount);
     if (chart) {
-        if (sourceLocation == DGPortal.Constants.All && cloudCnt > 0 && onPremCnt > 0) {
+        if (location == DGPortal.Constants.All && cloudCnt > 0 && onPremCnt > 0) {
             //var pixels = ((this.chart.xAxis[0].toPixels(cloudCnt)) / 4) - 10;
             var cloudPixels = ((chart.xAxis[0].toPixels(cloudCnt, false)) / 3) - 10;
             var onPremPixels = ((chart.xAxis[0].toPixels(onPremCnt, false)) / 3);
@@ -1191,15 +1045,19 @@ hs.Expander.prototype.onAfterExpand = function () {
     if (this.custom.chartOptions) {
         var chartOptions = this.custom.chartOptions;
         if (!this.hasChart) {
+
+            //adding "originalRenderTo_Id" property to the object with original component id which is used to show Drill-In
+            //highslide window.
+            if(!chartOptions.chart.originalRenderTo_Id) chartOptions.chart.originalRenderTo_Id = chartOptions.chart.renderTo;
+
             chartOptions.chart.renderTo = $('.highslide-body')[0];
             chartOptions.exporting.buttons.contextButton.enabled = false;
 
             //remove cursor pointer from series and plotbands
-            chartOptions.plotOptions.series.cursor = 'default';
-            chartOptions.chart.className = 'noPointerCursor';
-
+            //chartOptions.plotOptions.series.cursor = 'default';
+            //chartOptions.chart.className = 'noPointerCursor';
             //remove click event handlers from series
-            chartOptions.plotOptions.series.point.events.click = null;            
+            //chartOptions.plotOptions.series.point.events.click = null;
 
             var hsChart = new Highcharts.Chart(chartOptions);
             //removePlotLineToContent(hsChart);
@@ -1227,9 +1085,9 @@ function createGraph(obj) {
 }
 
 //class for saving xAxis data for chart.
-function XAxisData(sourceName, sourceLocation) {
+function XAxisData(sourceName, location) {
     this.source = sourceName;
-    this.sourceLocation = sourceLocation;
+    this.location = location;
     this.seriesData = new Ext.util.HashMap();
 }
 
@@ -1256,7 +1114,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'NoSQL',
-            sourceLocation: 'On-Premise',
+            location: 'On-Premise',
             fileTableCount: 4
         }
     },
@@ -1270,7 +1128,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'SQL',
-            sourceLocation: 'On-Premise',
+            location: 'On-Premise',
             fileTableCount: 7
         }
     },
@@ -1284,7 +1142,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'structured',
-            sourceLocation: 'Cloud',
+            location: 'Cloud',
             fileTableCount: 9
         }
     },
@@ -1298,7 +1156,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            sourceLocation: 'Cloud',
+            location: 'Cloud',
             fileTableCount: 3
 
         }
@@ -1313,7 +1171,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            sourceLocation: 'Cloud',
+            location: 'Cloud',
             fileTableCount: 1
         }
     },
@@ -1327,7 +1185,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'Unstructured',
-            sourceLocation: 'On-Premise',
+            location: 'On-Premise',
             fileTableCount: 17
         }
     },
@@ -1341,7 +1199,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'CSV',
-            sourceLocation: 'Cloud',
+            location: 'Cloud',
             fileTableCount: 10
         }
     },
@@ -1355,7 +1213,7 @@ sourceList = [
             monitored: 2,
             unscanned: 2,
             contentType: 'CSV',
-            sourceLocation: 'On-Premise',
+            location: 'On-Premise',
             fileTableCount: 4
         }
     }

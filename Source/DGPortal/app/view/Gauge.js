@@ -4,9 +4,16 @@ Ext.define('DGPortal.view.Gauge', {
     chart: null,
     dataObj: new Object,
     cls: { "background-color": "#0c213e" },
+    border: 1,
+    style: {
+        borderColor: '#ffffff',
+        borderStyle: 'solid'
+    },
     height: 150,
+    padding: 2,//'0 2 0 2',
     symbolPath: null,
     kmType: null,
+    dataPresent: false,
     initComponent: function () {
     },
     listeners: {
@@ -107,6 +114,9 @@ Ext.define('DGPortal.view.Gauge', {
             return;
         }
 
+        //set dataPresent to true as data is fetched from the API.
+        this.dataPresent = true;
+
         this.getStoreData(records);
         this.log('OnLoad of ' + this.id + " is called.");
         if (!this.chart) {
@@ -157,7 +167,7 @@ Ext.define('DGPortal.view.Gauge', {
                     // plotBackgroundColor: 'orange',
                     marginTop: -35,
                     spacing: [0, 0, 0, 0],
-                    renderTo: this.el.dom,
+                    renderTo: this.getId(),
                     reflow: true,
                     events: {
                         click: function (e) {
@@ -166,7 +176,7 @@ Ext.define('DGPortal.view.Gauge', {
                             gaugeObj.showDrillDown("ASSETS IN SCOPE", gaugeObj.kmType);
                         }
                     },
-                    className: 'pointChart',
+                    //className:'highCharts-chart-divMargin'            
                 },
                 exporting: {
                     enabled: false
@@ -236,7 +246,7 @@ Ext.define('DGPortal.view.Gauge', {
                 },
                 series: [
                     {
-                        //name: 'Move',
+                        //name: 'Move',                       
                         borderColor: Highcharts.getOptions().colors[0],
                         data: [{
                             color: Highcharts.getOptions().colors[0],
@@ -249,17 +259,31 @@ Ext.define('DGPortal.view.Gauge', {
             }
         );
 
+        //add & remove highlightKMGauge css class for applying border when mouseover happens when data is present i.e Data is fetched from API.
+        //if (this.dataPresent) {
+        this.el.on('mouseover', function () {
+            this.addCls('highlightKMGauge');
+        });
+
+        this.el.on('mouseout', function () {
+            this.removeCls('highlightKMGauge');
+        });
+        //}
+
         //this.applyClickHandler_PointerCursor();
     },
 
     afterGaugeRendered: function () {
         //console.log(this.renderedImage);
-        if (this.renderedImage) this.renderedImage.destroy();
 
+        //if (this.dataPresent) {
+        if (this.renderedImage) this.renderedImage.destroy();        
         var imgHeight = (this.symbolPath.indexOf('lock') != -1) ? 16 : 13;
         var imgWidth = 12;
-        var xVal = (this.getWidth() / 2) - (imgWidth / 2);
+        var left_right_padding = 5;
+        var xVal = ((this.getWidth() - left_right_padding) / 2) - (imgWidth / 2);
         this.renderedImage = this.chart.renderer.image(this.symbolPath, xVal, 22, imgWidth, imgHeight).add();
+        //}
     },
 
     getStoreData: function (records) {
@@ -273,9 +297,8 @@ Ext.define('DGPortal.view.Gauge', {
                         var objValue = JSON.parse(element.value);
                         this.readData.push(objValue);
                         var source = objValue.source.toUpperCase();
-                        var sourceLocation = objValue.sourceLocation.toUpperCase();
-
-                        this.saveActualDataForDrillIn(source, objValue, sourceLocation);
+                        var location = objValue.location.toUpperCase();
+                        this.saveActualDataForDrillIn(source, objValue, location);
                     }, this);
 
                     this.populateData(this.readData, DGPortal.Constants.All);
@@ -310,7 +333,7 @@ Ext.define('DGPortal.view.Gauge', {
                 case "Gauge_KM2":
                     var totalFiles_Tables = 0;
                     readData.forEach(function (item, index, array) {
-                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                        if (filterType == DGPortal.Constants.All || item.location.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
                         }
                     }, this);
@@ -325,7 +348,7 @@ Ext.define('DGPortal.view.Gauge', {
                 case "Gauge_KM3":
                     var totalFiles_Tables = 0, totalOperation = 0, operationFiles = 0, operationTables = 0;
                     readData.forEach(function (item, index, array) {
-                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                        if (filterType == DGPortal.Constants.All || item.location.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
                             operationFiles += item.operationFileCount;
                             operationTables += item.operationTableCount;
@@ -350,7 +373,7 @@ Ext.define('DGPortal.view.Gauge', {
                 case "Gauge_KM4":
                     var totalFiles_Tables = 0, totalProtected = 0, protectedFiles = 0, protectedTables = 0;
                     readData.forEach(function (item, index, array) {
-                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                        if (filterType == DGPortal.Constants.All || item.location.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
                             protectedFiles += item.protectionTableCount;
                             protectedTables += item.protectionFileCount;
@@ -376,7 +399,7 @@ Ext.define('DGPortal.view.Gauge', {
                 case "Gauge_KM5":
                     var totalFiles_Tables = 0, totalMonitored = 0, monitoredFiles = 0, monitoredTables = 0;
                     readData.forEach(function (item, index, array) {
-                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                        if (filterType == DGPortal.Constants.All || item.location.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
                             monitoredFiles += item.monitoredFileCount;
                             monitoredTables += item.monitoredTableCount;
@@ -411,7 +434,7 @@ Ext.define('DGPortal.view.Gauge', {
                 case "Gauge_KM6":
                     var totalFiles_Tables = 0, totalUnscanned = 0, unscannedFiles = 0, unscannedTables = 0;
                     readData.forEach(function (item, index, array) {
-                        if (filterType == DGPortal.Constants.All || item.sourceLocation.toUpperCase() == filterType) {
+                        if (filterType == DGPortal.Constants.All || item.location.toUpperCase() == filterType) {
                             totalFiles_Tables += item.totalFileCount + item.totalTableCount;
                             unscannedFiles += item.unscannedFileCount;
                             unscannedTables += item.unscannedTableCount;
@@ -435,31 +458,31 @@ Ext.define('DGPortal.view.Gauge', {
         }
     },
 
-    saveActualDataForDrillIn: function (source, value, sourceLocation) {
+    saveActualDataForDrillIn: function (source, value, location) {
         if (!this.actualDataMap) {
             this.actualDataMap = new Ext.util.HashMap();
         }
 
-        if (sourceLocation) {
-            var sourceLocationObjMap, sourceObjMap;
+        if (location) {
+            var locationObjMap, sourceObjMap;
 
             //adding actual data in hashMap for drill-in
-            if (this.actualDataMap.containsKey(sourceLocation)) {
-                sourceLocationObjMap = this.actualDataMap.get(sourceLocation);
-                if (sourceLocationObjMap.containsKey(source)) {
-                    sourceObjMap = sourceLocationObjMap.get(source);
+            if (this.actualDataMap.containsKey(location)) {
+                locationObjMap = this.actualDataMap.get(location);
+                if (locationObjMap.containsKey(source)) {
+                    sourceObjMap = locationObjMap.get(source);
                     sourceObjMap.arData.push(value);
                 }
                 else {
                     sourceObjMap = { source: source, arData: [value] };
-                    sourceLocationObjMap.add(source, sourceObjMap);
+                    locationObjMap.add(source, sourceObjMap);
                 }
             }
             else {
-                sourceLocationObjMap = new Ext.util.HashMap();
+                locationObjMap = new Ext.util.HashMap();
                 sourceObjMap = { source: source, arData: [value] };
-                sourceLocationObjMap.add(source, sourceObjMap);
-                this.actualDataMap.add(sourceLocation, sourceLocationObjMap);
+                locationObjMap.add(source, sourceObjMap);
+                this.actualDataMap.add(location, locationObjMap);
             }
         }
     },
@@ -474,7 +497,7 @@ Ext.define('DGPortal.view.Gauge', {
             selectedFilter: selectedFilter  //selectedFilter is a global variable to know the currently selected filter out All, On-Premise and Cloud,
         };
 
-        var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.KMGAUGE, config);        
+        var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.KMGAUGE, config);
     },
 
     // applyClickHandler_PointerCursor: function () {

@@ -11,7 +11,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
         type: 'vbox',
         align: 'stretch'
     },
-    margin: '10 10 0 10',
+    margin: '10 10 0 10',   
     items: [
         {
             xtype: 'panel',
@@ -82,7 +82,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     var actGauge_KM2 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM2",
                         kmType: 'TOTAL FILES',
-                        margin: '0 2 0 2',                        
+                        margin: '0 4 4 6',                        
                         // dataObj: {
                         //     yVal: 100,
                         //     title: '5 MILLION FILES/TABLES',
@@ -93,7 +93,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     var actGauge_KM3 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM3",
                         kmType: 'DETECTED DATA',
-                        margin: '0 2 0 0',
+                        margin: '0 4 4 0',
                         drillIn_DependentChartId: 'exposed'
                         // dataObj: {
                         //     yVal: 20,
@@ -105,7 +105,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     var actGauge_KM4 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM4",
                         kmType: 'PROTECTED',
-                        margin: '0 2 0 0',
+                        margin: '0 4 4 0',
                         drillIn_DependentChartId: 'protected'
                         // dataObj: {
                         //     yVal: 16,
@@ -117,7 +117,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     var actGauge_KM5 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM5",
                         kmType: 'ALERTED',
-                        margin: '0 2 0 0',
+                        margin: '0 4 4 0',
                         drillIn_DependentChartId: 'monitored'
                         // dataObj: {
                         //     yVal: 0.2,
@@ -129,7 +129,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                     var actGauge_KM6 = Ext.create('DGPortal.view.Gauge', {
                         id: "Gauge_KM6",
                         kmType: 'UNSCANNED',
-                        margin: '0 2 0 0',
+                        margin: '0 4 4 0',
                         drillIn_DependentChartId: 'unscanned'
                         // dataObj: {
                         //     yVal: 40,

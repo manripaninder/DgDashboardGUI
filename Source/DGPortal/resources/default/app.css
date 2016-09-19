@@ -115,7 +115,7 @@ label .x-component .x-component-default{
     color:#0d2240;
     text-transform: uppercase;
     font-size: 18px;
-    margin: 5px 0px 5px 0px;    
+    margin: 5px 20px 5px 20px;    
     display: block;    
     font-weight: normal;
     font-family: montserratbold
@@ -125,16 +125,10 @@ label .x-component .x-component-default{
     color:#0071ce;
     text-transform: uppercase;
     font-size: 14px;
-    margin: 5px 0px 5px 0px;    
+    margin: 5px 20px 5px 20px;    
     display: block;    
     font-weight: normal;
     font-family: montserratregular
-}
-
-/*class to apply pointer cursor on KMGauge chart */
-.pointChart
-{
-    cursor: pointer;
 }
 
 .customLoadMask{
@@ -149,12 +143,23 @@ label .x-component .x-component-default{
     background-position: center !important;     
 }
 
-/*class to apply pointer cursor on plotband paths of column chart */
-path{
+/*class to apply pointer cursor on plotband paths of column chart and (shape for I.E 8)*/
+path, shape{
     cursor: pointer;
+}
+
+/*setting cursor to default for other shapes in I.E 8 */
+shape.highcharts-background{
+    cursor:default;
 }
 
 /*class to remove pointer cursor from plotbands path in highslide expanded chart */
 .noPointerCursor path{
     cursor: default !important;
+}
+
+.highlightKMGauge{
+    /*background-color: palevioletred;*/
+    border: 1px solid #b3ddff !important;
+    cursor: pointer;
 }

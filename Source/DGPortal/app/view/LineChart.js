@@ -202,6 +202,12 @@ Ext.define('DGPortal.view.LineChart', {
                                 click: function (e) {
                                     var categoryName = this.category;
                                     var compId = this.series.chart.renderTo.id;
+
+                                    //if compId is not present that means click event is from highSlide window so taking originalRenderTo_Id from it.
+                                    if (!compId) {
+                                        compId = this.series.chart.options.chart.originalRenderTo_Id;
+                                    }
+
                                     var compObj = Ext.ComponentQuery.query('#' + compId)[0];
                                     compObj.showDrillDown(compObj.mainSectionName, compObj.chartTitle, categoryName);
                                 }
@@ -349,28 +355,31 @@ Ext.define('DGPortal.view.LineChart', {
 
         this.readData = new Ext.util.MixedCollection();
         arReadData.forEach(function (element, index, array) {
-            //var month = element.trendMonth.split('-')[0].toUpperCase();
-            var month = element.trendMonth.toUpperCase();
+            var splitVal = element.trendMonth.split('-');
+
+            var month = splitVal[0].toUpperCase();
+            var year = splitVal[1].substr(2, 2);
+            var reqFormatVal = month + '-' + year;
 
             //adding unique months to hashMap
-            if (this.readData.containsKey(month)) {
-                var arValues = this.readData.get(month);
+            if (this.readData.containsKey(reqFormatVal)) {
+                var arValues = this.readData.get(reqFormatVal);
                 arValues.push(element);
             } else {
                 var arValues = [element];
-                this.readData.add(month, arValues);
+                this.readData.add(reqFormatVal, arValues);
             }
         }, this);
         this.populateData(this.readData, DGPortal.Constants.All);
     },
 
     //method for populating data
-    populateData: function (readData, sourceLocation) {
+    populateData: function (readData, location) {
         var arXAxisCatgs = [];
         var exposed = { name: 'EXPOSED', data: [], marker: { symbol: 'circle' } };
         var masked = { name: 'MASKED/ENCRYPTED', data: [], marker: { symbol: 'circle' } };
         var monitored = { name: 'MONITORED', data: [], marker: { symbol: 'circle' } };
-        var clean = { name: 'CLEAN', data: [], marker: { symbol: 'circle' } };
+        var clean = { name: 'CLEANED', data: [], marker: { symbol: 'circle' } };
         var unscanned = { name: 'UNSCANNED', data: [], marker: { symbol: 'circle' } };
 
         if (readData && readData.length > 0) {
@@ -380,13 +389,13 @@ Ext.define('DGPortal.view.LineChart', {
 
                 if (arValues && arValues.length > 0) {
                     arValues.forEach(function (element, index, array) {
-                        if (sourceLocation == DGPortal.Constants.All || sourceLocation == element.sourceLocation.toUpperCase()) {
-                            //if sourceLocation criteria qualifies then setting eligibleElement equals to true.
+                        if (location == DGPortal.Constants.All || location == element.location.toUpperCase()) {
+                            //if location criteria qualifies then setting eligibleElement equals to true.
                             eligibleElement = true;
                             exposedVal += element.exposed;
                             maskedEncrytedVal += element.maskedEncryted;
                             monitoredVal += element.monitored;
-                            cleanVal += element.clean;
+                            cleanVal += element.cleaned;
                             unscannedVal += element.unscanned;
                         }
                     }, this);
@@ -418,7 +427,7 @@ Ext.define('DGPortal.view.LineChart', {
             drillIn_DependentChartId: undefined,
             actualDataMap: this.readData.getByKey(categoryName),
             selectedFilter: selectedFilter  //selectedFilter is a global variable to know the currently selected filter out All, On-Premise and Cloud,
-        };        
+        };
         var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.COVTREND_CHART, config);
     }
 });

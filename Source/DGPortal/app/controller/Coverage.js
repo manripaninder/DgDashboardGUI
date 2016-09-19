@@ -7,7 +7,10 @@ Ext.define('DGPortal.controller.Coverage', {
 
     ],
     init: function () {
-this.setHeaderNames();
+
+        //initialise Header names HashMap
+        DGPortal.Constants.setHeaderNamesHashMap();
+
         this.control({
             '#btnAll': {
                 toggle: function (_this, pressed, eOpts) {
@@ -282,10 +285,10 @@ this.setHeaderNames();
             var cloudCount = 0;
             arData.forEach(function (item, index, array) {
                 var objSource = JSON.parse(item.value);
-                var sourceLoc = objSource.sourceLocation.toUpperCase();
-                if (sourceLoc == DGPortal.Constants.OnPremise) {
+                var location = objSource.location.toUpperCase();
+                if (location == DGPortal.Constants.OnPremise) {
                     onPremiseCount += objSource.totalFileCount + objSource.totalTableCount;
-                } else if (sourceLoc == DGPortal.Constants.Cloud) {
+                } else if (location == DGPortal.Constants.Cloud) {
                     cloudCount += objSource.totalFileCount + objSource.totalTableCount;
                 }
             });
@@ -299,37 +302,4 @@ this.setHeaderNames();
             lblCloudTotal.setText(cloudCount);
         }
     },
-
-   setHeaderNames: function (){
-    headerNamesHashMap = new Ext.util.HashMap();
-    headerNamesHashMap.add('source', 'SOURCE');
-    headerNamesHashMap.add('policyId', 'POLICY ID');
-    headerNamesHashMap.add('policyName', 'POLICY NAME');
-    headerNamesHashMap.add('exposed', 'EXPOSED');
-    headerNamesHashMap.add('sourceLocation', 'SOURCE LOCATION');
-    headerNamesHashMap.add('totalFileCount', 'TOTAL FILE COUNT');
-    headerNamesHashMap.add('totalTableCount', 'TOTAL TABLE COUNT');
-    headerNamesHashMap.add('operationFileCount', 'OPERATION FILE COUNT');
-    headerNamesHashMap.add('operationTableCount', 'OPERATION TABLE COUNT');
-    headerNamesHashMap.add('protectionFileCount', 'PROTECTED FILE COUNT');
-    headerNamesHashMap.add('protectionTableCount', 'PROTECTION TABLE COUNT');
-    headerNamesHashMap.add('monitoredFileCount', 'MONITORED FILE COUNT');
-    headerNamesHashMap.add('monitoredTableCount', 'MONITORED TABLE COUNT');
-    headerNamesHashMap.add('unscannedFileCount', 'UNSCANNED FILE COUNT');
-    headerNamesHashMap.add('unscannedTableCount', 'UNSCANNED TABLE COUNT');
-    headerNamesHashMap.add('sourceLocation', 'SOURCE LOCATION');
-    headerNamesHashMap.add('serverVersion', 'SERVER VERSION');
-    headerNamesHashMap.add('serverDistribution', 'SERVER DISTRIBUTION');
-    headerNamesHashMap.add('maskedEncryted', 'MASKED / ENCRYPTED');
-    headerNamesHashMap.add('monitored', 'MONITORED');
-    headerNamesHashMap.add('clean', 'CLEAN');
-    headerNamesHashMap.add('unscanned', 'UNSCANNED');
-    headerNamesHashMap.add('encrytionDone', 'ENCRYPTION DONE');
-    headerNamesHashMap.add('protectedCount', 'PROTECTED COUNT');
-    headerNamesHashMap.add('contentType', 'CONTENT TYPE');
-    headerNamesHashMap.add('fileTableCount', 'FILE TABLE COUNT');
-    headerNamesHashMap.add('masked', 'MASKED');
-  
-}
-
 });
