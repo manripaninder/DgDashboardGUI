@@ -1,8 +1,8 @@
 Ext.define('DGPortal.Constants', {
     singleton: true,
-    API_URL_Sources: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources',
-    API_URL_OnPremise_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/On-Premises/operations',
-    API_URL_Cloud_Operations: 'http://112.196.4.62:8080/dgDashboardRest/metadata/sources/categories/Cloud/operations',
+    API_URL_Sources: 'http://182.73.95.105:8080/dgDashboardRest/metadata/sources',
+    API_URL_OnPremise_Operations: 'http://182.73.95.105:8080/dgDashboardRest/metadata/sources/categories/On-Premises/operations',
+    API_URL_Cloud_Operations: 'http://182.73.95.105:8080/dgDashboardRest/metadata/sources/categories/Cloud/operations',
     OnPremise: 'ON-PREMISES',
     Cloud: 'CLOUD',
     All: 'ALL',

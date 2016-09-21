@@ -20,7 +20,7 @@ Ext.define('DGPortal.view.SectionHeader', {
             xtype: 'label',
             text: 'OVERALL COVERAGE',
             margin: '0 0 0 20',
-            columnWidth: 0.32,
+            columnWidth: 1,
             style: {
                 fontFamily: 'montserratregular',
                 fontWeight: 'bold',

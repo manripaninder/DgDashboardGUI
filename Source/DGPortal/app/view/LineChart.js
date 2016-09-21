@@ -91,7 +91,7 @@ Ext.define('DGPortal.view.LineChart', {
                     borderWidth: 0.8,
                     borderColor: '#cccccc',
                     renderTo: this.getId(),
-                    spacingBottom: 5,
+                    spacingBottom: 5
                     //marginTop: 2,
                     // spacingLeft: 2,
                     // spacingRight: 10,
@@ -113,10 +113,10 @@ Ext.define('DGPortal.view.LineChart', {
                         style: {
                             fontSize: '8px',
                             fontFamily: 'montserratregular',
-                            color: '#646464',
+                            color: '#646464'
                             //fontWeight: 'bold'
                         }
-                    },
+                    }
                 },
                 yAxis: {
                     gridLineDashStyle: 'solid',
@@ -124,12 +124,12 @@ Ext.define('DGPortal.view.LineChart', {
                     min: 0,
                     minRange: 1,
                     title: {
-                        enabled: false,
+                        enabled: false
                     },
                     labels: {
                         align: 'right',
                         x: 10,
-                        y: -2,
+                        y: -2
                         // tickInterval: 2,
                         // tickAmount: 4
                     }
@@ -140,7 +140,6 @@ Ext.define('DGPortal.view.LineChart', {
                 title: {
                     align: "left",
                     text: this.chartTitle,
-
                     style: {
                         color: '#0071ce',
                         fontSize: '14px',

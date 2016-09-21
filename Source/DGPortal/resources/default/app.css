@@ -158,8 +158,8 @@ shape.highcharts-background{
     cursor: default !important;
 }
 
-.highlightKMGauge{
-    /*background-color: palevioletred;*/
+/*class to apply highlight effect on KM Gauges*/
+.highlightKMGauge{    
     border: 1px solid #b3ddff !important;
     cursor: pointer;
 }

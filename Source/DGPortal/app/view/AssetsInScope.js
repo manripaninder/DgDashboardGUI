@@ -166,7 +166,7 @@ Ext.define('DGPortal.view.AssetsInScope', {
                 //     // });
                 // },
                 resize: function () {
-                    //resizing child components again 
+                    //resizing child components again                   
                     if (this.rendered) {
                         var parentWidth = this.getWidth();
                         Ext.each(this.items.items[1], function (item, index, array) {

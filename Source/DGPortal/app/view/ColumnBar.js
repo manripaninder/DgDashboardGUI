@@ -115,8 +115,8 @@ Ext.define('DGPortal.view.ColumnBar', {
                         fontFamily: 'montserratregular',
                         color: '#646464',
                         //fontWeight: 'bold'
-                    },
-                },
+                    }
+                }
             },
             yAxis: {
                 gridLineWidth: 0,
@@ -136,7 +136,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     // formatter: function () {
                     //     return this.value + "k";
                     // }
-                },
+                }
                 //tickInterval:null,
                 //tickAmount: 3
             },
@@ -176,7 +176,6 @@ Ext.define('DGPortal.view.ColumnBar', {
                     fontWeight: 'normal',
                     fontFamily: 'montserratregular',
                     textTransform: 'uppercase',
-
                 }
             },
             legend: {
@@ -188,7 +187,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     fontWeight: 'normal',
                     fontFamily: 'montserratregular',
                     color: '#646464',
-                    textTransform: 'uppercase',
+                    textTransform: 'uppercase'
                 },
                 symbolHeight: 10,
                 symbolWidth: 10,
@@ -217,7 +216,7 @@ Ext.define('DGPortal.view.ColumnBar', {
                     }
                 }
             },
-            series: this.dataObj.series,
+            series: this.dataObj.series
         };
 
         this.chart = new Highcharts.Chart(
@@ -703,6 +702,7 @@ Ext.define('DGPortal.view.ColumnBar', {
         }
         this.dataObj.xAxisCategories = arXAxisCatgs;
         this.dataObj.series = sdMap.getValues();
+
         this.drawChart();
     },
 
@@ -1048,7 +1048,7 @@ hs.Expander.prototype.onAfterExpand = function () {
 
             //adding "originalRenderTo_Id" property to the object with original component id which is used to show Drill-In
             //highslide window.
-            if(!chartOptions.chart.originalRenderTo_Id) chartOptions.chart.originalRenderTo_Id = chartOptions.chart.renderTo;
+            if (!chartOptions.chart.originalRenderTo_Id) chartOptions.chart.originalRenderTo_Id = chartOptions.chart.renderTo;
 
             chartOptions.chart.renderTo = $('.highslide-body')[0];
             chartOptions.exporting.buttons.contextButton.enabled = false;

@@ -36,10 +36,28 @@ Ext.define('DGPortal.view.Gauge', {
 
         resize: function () {
             //console.log('Gauge resize');
-            // console.log("Gauge resize + chart reflow value " + this.chart.reflow);
+            // console.log("Gauge resize + chart reflow value " + this.chart.reflow);            
             if (this.rendered && this.chart) {
-                if (this.afterGaugeRendered) this.afterGaugeRendered();
-                this.chart.reflow();
+                // if (this.afterGaugeRendered) this.afterGaugeRendered();
+                // this.chart.reflow();
+
+                //setting charts height and width explicitly when browser is I.E 8.
+                if (Ext.ieVersion == 8) {
+                    var kmGaugeObj = this;
+                    if (kmGaugeObj.timeOut) { clearTimeout(kmGaugeObj.timeOut) };
+                    kmGaugeObj.timeOut = setTimeout(function () {
+                        var widthForIE8 = Math.round(kmGaugeObj.getWidth() - 6);
+                        var heightForIE8 = Math.round(kmGaugeObj.getHeight() - 6);
+
+                        kmGaugeObj.chart.setSize(widthForIE8, heightForIE8, false);
+                        if (kmGaugeObj.afterGaugeRendered) kmGaugeObj.afterGaugeRendered();
+                        kmGaugeObj.timeOut = undefined;
+                    }, 1000, this);
+                } else {
+                    this.chart.reflow();
+                    if (this.afterGaugeRendered) this.afterGaugeRendered();
+                }
+
             }
         }
     },
@@ -104,6 +122,7 @@ Ext.define('DGPortal.view.Gauge', {
     },
     // private
     onLoad: function (_this, records, successful, eOpts) {
+
         this.dataObj.yVal = 0;
         this.dataObj.subtitle = "0";
         this.dataObj.title = "No data";
@@ -133,7 +152,8 @@ Ext.define('DGPortal.view.Gauge', {
     },
 
     refresh: function () {
-        //console.log("Called refresh of " + this.id + this.dataObj.yVal + " Title " + this.dataObj.title + " Subtitle " + this.dataObj.subtitle);
+        //console.log("Called refresh of " + this.id + this.dataObj.yVal + " Title " + this.dataObj.title + " Subtitle " + this.dataObj.subtitle);        
+
         var point = this.chart.series[0].points[0];
         point.update(this.dataObj.yVal);
         this.chart.setTitle({
@@ -159,6 +179,13 @@ Ext.define('DGPortal.view.Gauge', {
         //hide mask
         this.removeCls('customLoadMask');
 
+        var widthForIE8 = null;
+        var heightForIE8 = null;
+        if (Ext.ieVersion == 8) {
+            widthForIE8 = this.getWidth() - 6;
+            heightForIE8 = this.getHeight() - 6;
+        }
+
         this.log(this.rendered);
         this.chart = new Highcharts.Chart(
             {
@@ -176,7 +203,9 @@ Ext.define('DGPortal.view.Gauge', {
                             gaugeObj.showDrillDown("ASSETS IN SCOPE", gaugeObj.kmType);
                         }
                     },
-                    //className:'highCharts-chart-divMargin'            
+                    width: widthForIE8,
+                    height: heightForIE8
+                    //className:'highCharts-chart-cursor'            
                 },
                 exporting: {
                     enabled: false
@@ -187,10 +216,10 @@ Ext.define('DGPortal.view.Gauge', {
                         fontSize: '12px',
                         color: '#555555',
                         fontFamily: 'montserratregular',
-                        fontWeight: 'normal',
+                        fontWeight: 'normal'
                     },
                     verticalAlign: 'bottom',
-                    y: -25,
+                    y: -20
                 },
                 subtitle: {
                     text: this.dataObj.subtitle,
@@ -241,7 +270,7 @@ Ext.define('DGPortal.view.Gauge', {
                             format: '{y} %'
                         },
                         linecap: 'square',
-                        stickyTracking: false,
+                        stickyTracking: false
                     }
                 },
                 series: [
@@ -253,22 +282,21 @@ Ext.define('DGPortal.view.Gauge', {
                             radius: '100%',
                             innerRadius: '100%',
                             y: this.dataObj.yVal
-                        }],
+                        }]
                     }]
-
             }
         );
 
         //add & remove highlightKMGauge css class for applying border when mouseover happens when data is present i.e Data is fetched from API.
-        //if (this.dataPresent) {
-        this.el.on('mouseover', function () {
-            this.addCls('highlightKMGauge');
-        });
+        if (this.dataPresent) {
+            this.el.on('mouseover', function () {
+                this.addCls('highlightKMGauge');
+            });
 
-        this.el.on('mouseout', function () {
-            this.removeCls('highlightKMGauge');
-        });
-        //}
+            this.el.on('mouseout', function () {
+                this.removeCls('highlightKMGauge');
+            });
+        }
 
         //this.applyClickHandler_PointerCursor();
     },
@@ -276,14 +304,14 @@ Ext.define('DGPortal.view.Gauge', {
     afterGaugeRendered: function () {
         //console.log(this.renderedImage);
 
-        //if (this.dataPresent) {
-        if (this.renderedImage) this.renderedImage.destroy();        
-        var imgHeight = (this.symbolPath.indexOf('lock') != -1) ? 16 : 13;
-        var imgWidth = 12;
-        var left_right_padding = 5;
-        var xVal = ((this.getWidth() - left_right_padding) / 2) - (imgWidth / 2);
-        this.renderedImage = this.chart.renderer.image(this.symbolPath, xVal, 22, imgWidth, imgHeight).add();
-        //}
+        if (this.dataPresent) {
+            if (this.renderedImage) this.renderedImage.destroy();
+            var imgHeight = (this.symbolPath.indexOf('lock') != -1) ? 16 : 13;
+            var imgWidth = 12;
+            var left_right_padding = 6; //([left & right] border + [left & right] padding)
+            var xVal = ((this.getWidth() - left_right_padding) / 2) - (imgWidth / 2);
+            this.renderedImage = this.chart.renderer.image(this.symbolPath, xVal, 22, imgWidth, imgHeight).add();
+        }
     },
 
     getStoreData: function (records) {
@@ -498,7 +526,7 @@ Ext.define('DGPortal.view.Gauge', {
         };
 
         var chartDrillIn = DGPortal.factory.ChartDrillIn.create(DGPortal.Constants.KMGAUGE, config);
-    },
+    }
 
     // applyClickHandler_PointerCursor: function () {
     //     $("#" + this.id + " " + "path").on('click', { elementObj: this }, function (e) {
